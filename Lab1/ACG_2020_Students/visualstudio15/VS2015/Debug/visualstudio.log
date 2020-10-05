@@ -1,0 +1,48 @@
+﻿  main.cpp
+F:\h3R\Escritorio\ACG_2020_Student\ACG_2020_Student\ACG_2020_Students\src\framework.h(26,66): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+F:\h3R\Escritorio\ACG_2020_Student\ACG_2020_Student\ACG_2020_Students\src\framework.h(64,82): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+F:\h3R\Escritorio\ACG_2020_Student\ACG_2020_Student\ACG_2020_Students\src\framework.h(149,82): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+F:\h3R\Escritorio\ACG_2020_Student\ACG_2020_Student\ACG_2020_Students\src\framework.h(179,109): warning C4244: 'argument': conversion from 'float' to 'unsigned char', possible loss of data
+F:\h3R\Escritorio\ACG_2020_Student\ACG_2020_Student\ACG_2020_Students\src\framework.h(179,100): warning C4244: 'argument': conversion from 'float' to 'unsigned char', possible loss of data
+F:\h3R\Escritorio\ACG_2020_Student\ACG_2020_Student\ACG_2020_Students\src\framework.h(179,91): warning C4244: 'argument': conversion from 'float' to 'unsigned char', possible loss of data
+F:\h3R\Escritorio\ACG_2020_Student\ACG_2020_Student\ACG_2020_Students\src\framework.h(179,82): warning C4244: 'argument': conversion from 'float' to 'unsigned char', possible loss of data
+F:\h3R\Escritorio\ACG_2020_Student\ACG_2020_Student\ACG_2020_Students\src\framework.h(181,88): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+F:\h3R\Escritorio\ACG_2020_Student\ACG_2020_Student\ACG_2020_Students\src\main.cpp(171,46): warning C4244: '=': conversion from 'Sint32' to 'float', possible loss of data
+F:\h3R\Escritorio\ACG_2020_Student\ACG_2020_Student\ACG_2020_Students\src\main.cpp(208,24): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+animation.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/INCREMENTAL:NO' specification
+LINK : warning LNK4098: defaultlib 'LIBCMT' conflicts with use of other libs; use /NODEFAULTLIB:library
+LINK : warning LNK4286: symbol '___glewActiveTexture' defined in 'glew32s.lib(glew.obj)' is imported by 'imgui_impl_opengl3.obj'
+LINK : warning LNK4286: symbol '___glewBlendEquation' defined in 'glew32s.lib(glew.obj)' is imported by 'imgui_impl_opengl3.obj'
+LINK : warning LNK4286: symbol '___glewBlendFuncSeparate' defined in 'glew32s.lib(glew.obj)' is imported by 'imgui_impl_opengl3.obj'
+LINK : warning LNK4286: symbol '___glewBindBuffer' defined in 'glew32s.lib(glew.obj)' is imported by 'imgui_impl_opengl3.obj'
+LINK : warning LNK4286: symbol '___glewBufferData' defined in 'glew32s.lib(glew.obj)' is imported by 'imgui_impl_opengl3.obj'
+LINK : warning LNK4286: symbol '___glewDeleteBuffers' defined in 'glew32s.lib(glew.obj)' is imported by 'imgui_impl_opengl3.obj'
+LINK : warning LNK4286: symbol '___glewGenBuffers' defined in 'glew32s.lib(glew.obj)' is imported by 'imgui_impl_opengl3.obj'
+LINK : warning LNK4286: symbol '___glewAttachShader' defined in 'glew32s.lib(glew.obj)' is imported by 'imgui_impl_opengl3.obj'
+LINK : warning LNK4286: symbol '___glewBlendEquationSeparate' defined in 'glew32s.lib(glew.obj)' is imported by 'imgui_impl_opengl3.obj'
+LINK : warning LNK4286: symbol '___glewCompileShader' defined in 'glew32s.lib(glew.obj)' is imported by 'imgui_impl_opengl3.obj'
+LINK : warning LNK4286: symbol '___glewCreateProgram' defined in 'glew32s.lib(glew.obj)' is imported by 'imgui_impl_opengl3.obj'
+LINK : warning LNK4286: symbol '___glewCreateShader' defined in 'glew32s.lib(glew.obj)' is imported by 'imgui_impl_opengl3.obj'
+LINK : warning LNK4286: symbol '___glewDeleteProgram' defined in 'glew32s.lib(glew.obj)' is imported by 'imgui_impl_opengl3.obj'
+LINK : warning LNK4286: symbol '___glewDeleteShader' defined in 'glew32s.lib(glew.obj)' is imported by 'imgui_impl_opengl3.obj'
+LINK : warning LNK4286: symbol '___glewDetachShader' defined in 'glew32s.lib(glew.obj)' is imported by 'imgui_impl_opengl3.obj'
+LINK : warning LNK4286: symbol '___glewEnableVertexAttribArray' defined in 'glew32s.lib(glew.obj)' is imported by 'imgui_impl_opengl3.obj'
+LINK : warning LNK4286: symbol '___glewGetAttribLocation' defined in 'glew32s.lib(glew.obj)' is imported by 'imgui_impl_opengl3.obj'
+LINK : warning LNK4286: symbol '___glewGetProgramInfoLog' defined in 'glew32s.lib(glew.obj)' is imported by 'imgui_impl_opengl3.obj'
+LINK : warning LNK4286: symbol '___glewGetProgramiv' defined in 'glew32s.lib(glew.obj)' is imported by 'imgui_impl_opengl3.obj'
+LINK : warning LNK4286: symbol '___glewGetShaderInfoLog' defined in 'glew32s.lib(glew.obj)' is imported by 'imgui_impl_opengl3.obj'
+LINK : warning LNK4286: symbol '___glewGetShaderiv' defined in 'glew32s.lib(glew.obj)' is imported by 'imgui_impl_opengl3.obj'
+LINK : warning LNK4286: symbol '___glewGetUniformLocation' defined in 'glew32s.lib(glew.obj)' is imported by 'imgui_impl_opengl3.obj'
+LINK : warning LNK4286: symbol '___glewLinkProgram' defined in 'glew32s.lib(glew.obj)' is imported by 'imgui_impl_opengl3.obj'
+LINK : warning LNK4286: symbol '___glewShaderSource' defined in 'glew32s.lib(glew.obj)' is imported by 'imgui_impl_opengl3.obj'
+LINK : warning LNK4286: symbol '___glewUniform1i' defined in 'glew32s.lib(glew.obj)' is imported by 'imgui_impl_opengl3.obj'
+LINK : warning LNK4286: symbol '___glewUniformMatrix4fv' defined in 'glew32s.lib(glew.obj)' is imported by 'imgui_impl_opengl3.obj'
+LINK : warning LNK4286: symbol '___glewUseProgram' defined in 'glew32s.lib(glew.obj)' is imported by 'imgui_impl_opengl3.obj'
+LINK : warning LNK4286: symbol '___glewVertexAttribPointer' defined in 'glew32s.lib(glew.obj)' is imported by 'imgui_impl_opengl3.obj'
+LINK : warning LNK4286: symbol '___glewDrawElementsBaseVertex' defined in 'glew32s.lib(glew.obj)' is imported by 'imgui_impl_opengl3.obj'
+LINK : warning LNK4286: symbol '___glewBindSampler' defined in 'glew32s.lib(glew.obj)' is imported by 'imgui_impl_opengl3.obj'
+LINK : warning LNK4286: symbol '___glewBindVertexArray' defined in 'glew32s.lib(glew.obj)' is imported by 'imgui_impl_opengl3.obj'
+LINK : warning LNK4286: symbol '___glewDeleteVertexArrays' defined in 'glew32s.lib(glew.obj)' is imported by 'imgui_impl_opengl3.obj'
+LINK : warning LNK4286: symbol '___glewGenVertexArrays' defined in 'glew32s.lib(glew.obj)' is imported by 'imgui_impl_opengl3.obj'
+glew32s.lib(glew.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'glew32s.lib(glew.obj)' or at 'F:\h3R\Escritorio\ACG_2020_Student\ACG_2020_Student\ACG_2020_Students\vc120.pdb'; linking object as if no debug info
+  visualstudio.vcxproj -> F:\h3R\Escritorio\ACG_2020_Student\ACG_2020_Student\ACG_2020_Students\visualstudio15\VS2015\..\..\framework_debug.exe
