@@ -23,8 +23,11 @@ SceneNode::~SceneNode()
 
 void SceneNode::render(Camera* camera)
 {
-	if (material)
+	if (material) {
+		//glDisable(GL_DEPTH_TEST)
 		material->render(mesh, model, camera);
+		//glEnable(GL_DEPTH_TEST)
+	}
 }
 
 void SceneNode::renderWireframe(Camera* camera)

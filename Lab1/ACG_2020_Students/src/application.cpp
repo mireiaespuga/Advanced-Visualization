@@ -44,8 +44,21 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	camera->lookAt(Vector3(-5.f, 1.5f, 10.f), Vector3(0.f, 0.0f, 0.f), Vector3(0.f, 1.f, 0.f));
 	camera->setPerspective(45.f,window_width/(float)window_height,0.1f,10000.f); //set the projection, we want to be perspective
 
+	Matrix44 model;
+	model.translate(2.0f, 2.0f, 2.0f);
 	// Create node and add it to the scene
-	SceneNode * node = new SceneNode("Scene node");
+	SceneNode * sphereNode = new SceneNode("Sphere node");
+	sphereNode->mesh = Mesh::Get("data/meshes/sphere.obj");
+	sphereNode->model = model;
+	
+	StandardMaterial* sphereMaterial = new StandardMaterial();
+	sphereMaterial->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/texture.fs");
+	sphereMaterial->texture = Texture::Get("data/textures/blueNoise.png");
+	sphereNode->material = sphereMaterial;
+	node_list.push_back(sphereNode);
+
+	
+	SceneNode* node = new SceneNode("Scene node");
 	node_list.push_back(node);
 
 	// Set mesh to node
@@ -55,7 +68,13 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 
 	// Set material
 	StandardMaterial* material = new StandardMaterial();
+	// no acabo d'entendre que es la direcció que s'ha de definir dins de textureCube per tal de que la seguent linia funcioni
+	//material->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/textureCube.fs");
 	material->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/flat.fs");
+	// Set texture
+	Texture* cubemap = new Texture();
+	cubemap->cubemapFromImages("data/environments/city");
+	material->texture = cubemap;
 	node->material = material;
 	
 	//hide the cursor
