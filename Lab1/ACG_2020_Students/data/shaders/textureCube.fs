@@ -8,11 +8,11 @@ varying vec4 v_color;
 
 uniform vec4 u_color;
 uniform samplerCube u_texture;
-uniform vec3 direction;
-uniform float u_time;
+uniform vec3 u_camera_position;
 
 void main()
 {
-	vec2 uv = v_uv;
-	gl_FragColor = u_color * textureCube(sampler, direction)
+	vec3 E = normalize(v_world_position - u_camera_position);
+	vec4 color = u_color * textureCube( u_texture, E );
+	gl_FragColor = color;
 }

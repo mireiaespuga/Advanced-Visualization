@@ -23,9 +23,11 @@ void StandardMaterial::setUniforms(Camera* camera, Matrix44 model)
 
 	shader->setUniform("u_color", color);
 
+	shader->setUniform("u_light_position", Vector3(0.0f, 0.0f, 0.0f));
+	shader->setUniform("u_light_color", Vector3(1.0f, 1.0f, 1.0f));
+
 	if (texture) {
 		shader->setUniform("u_texture", texture);
-		shader->setUniform("direction", vec3(1.f, 1.f, 1.f));
 	}
 }
 
