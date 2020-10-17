@@ -55,6 +55,13 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	lightNode->color = vec3(0.f, 0.f, 1.f);
 	light_list.push_back(lightNode);
 
+	Light* lightNode1 = new Light();
+	model.setTranslation(0.0f, 0.0f, 2.0f);
+	model.scale(0.2f, 0.2f, 0.2f);
+	lightNode1->model = model;
+	lightNode1->color = vec3(1.f, 0.f, 0.f);
+	light_list.push_back(lightNode1);
+
 	// Create node and add it to the scene
 	Light* lightNode2 = new Light();
 	light_list.push_back(lightNode2);
@@ -78,6 +85,7 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	// SCENE CUBE
 	SceneNode* node = new SceneNode("Scene node");
 	node_list.push_back(node);
+	node->light = false;
 	// Set mesh to node
 	Mesh* mesh = new Mesh();
 	mesh->createCube();
@@ -106,29 +114,36 @@ void Application::render(void)
 	// Clear the window and the depth buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//glDepthFunc(GL_EQUAL);
-	//
-
-
 	//set the camera as default
 	camera->enable();
 
 	for (int i = 0; i < light_list.size(); i++) {
-		light_list[i]->render(camera);
+		if (light_list[i]->enable) {
+			light_list[i]->render(camera);
+		}
+	}
+
+	for (int j = 0; j < node_list.size(); j++) {
+		//if (node_list[j]->light == false) {
+			node_list[j]->render(camera, NULL); // si a l'objecte no se li aplica iluminació nomes es renderitzara la primera vegada (sino quedara "cremat")
+		//}
 	}
 
 	if (light_list.size() > 0) {
-	for (int i = 0; i < light_list.size(); i++) {
-		if (i > 0) {
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-			glDepthFunc(GL_LEQUAL);
-		}
-		for (int j = 0; j < node_list.size(); j++) {
-			node_list[j]->render(camera, light_list[i]);
-
-			if (render_wireframe)
-				node_list[j]->renderWireframe(camera);
+		for (int i = 0; i < light_list.size(); i++) {
+			if (light_list[i]->enable) {
+				 // si es la primera vegada que es fa el render no saplica blend
+					glEnable(GL_BLEND);
+					glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+					glDepthFunc(GL_LEQUAL);
+				
+				for (int j = 0; j < node_list.size(); j++) {
+					if (node_list[j]->light) { // si l'objecte es veu afectat per les llums
+						node_list[j]->render(camera, light_list[i]);
+					} 
+					if (render_wireframe)
+						node_list[j]->renderWireframe(camera);
+				}
 			}
 		}
 	}

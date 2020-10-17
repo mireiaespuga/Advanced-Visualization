@@ -21,6 +21,7 @@ public:
 	Mesh* mesh = NULL;
 	Shader* shader = NULL;
 	Matrix44 model;
+	bool enable = true;
 
 
 	virtual void renderInMenu();
