@@ -20,23 +20,25 @@ Light::~Light()
 
 void Light::render(Camera* camera)
 {
-	//set flags
-	glEnable(GL_DEPTH_TEST);
-	glDisable(GL_CULL_FACE);
+	if (enable) {
+		//set flags
+		glEnable(GL_DEPTH_TEST);
+		glDisable(GL_CULL_FACE);
 
-	if (mesh && shader)
-	{
-		//enable shader
-		shader->enable();
+		if (mesh && shader)
+		{
+			//enable shader
+			shader->enable();
 
-		//upload uniforms
-		setUniforms(camera);
+			//upload uniforms
+			setUniforms(camera);
 
-		//do the draw call
-		mesh->render(GL_TRIANGLES);
+			//do the draw call
+			mesh->render(GL_TRIANGLES);
 
-		//disable shader
-		shader->disable();
+			//disable shader
+			shader->disable();
+		}
 	}
 }
 
@@ -52,25 +54,13 @@ void Light::setUniforms(Camera* camera) {
 void Light::renderInMenu()
 {
 	//Light edit
-	if (ImGui::TreeNode("Model"))
-	{
-		//TODO: canviar model a vector per no tenir scale ni rotation
-		float matrixTranslation[3], matrixRotation[3], matrixScale[3];
-		ImGuizmo::DecomposeMatrixToComponents(model.m, matrixTranslation, matrixRotation, matrixScale);
-		ImGui::DragFloat3("Position", matrixTranslation, 0.1f);
-		ImGui::DragFloat3("Rotation", matrixRotation, 0.1f);
-		ImGui::DragFloat3("Scale", matrixScale, 0.1f);
-		ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, model.m);
+	//TODO: canviar model a vector per no tenir scale ni rotation
+	float matrixTranslation[3], matrixRotation[3], matrixScale[3];
+	ImGuizmo::DecomposeMatrixToComponents(model.m, matrixTranslation, matrixRotation, matrixScale);
+	ImGui::DragFloat3("Position", matrixTranslation, 0.1f);
+	ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, model.m);
 
-		ImGui::TreePop();
-	}
-
-	//Material
-	if (ImGui::TreeNode("Color"))
-	{
-		ImGui::ColorEdit3("Color", (float*)&color); // Edit 3 floats representing a color
-		ImGui::TreePop();
-	}
+	ImGui::ColorEdit3("Color", (float*)&color); // Edit 3 floats representing a color
 	
 	ImGui::Checkbox("Enable", &enable);
 }

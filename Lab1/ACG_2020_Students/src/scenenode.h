@@ -22,6 +22,7 @@ public:
 	Mesh* mesh = NULL;
 	Matrix44 model;
 	bool light = true;
+	bool enable = true;
 
 	virtual void render(Camera* camera, Light* light);
 	virtual void renderWireframe(Camera* camera);

@@ -23,10 +23,12 @@ SceneNode::~SceneNode()
 
 void SceneNode::render(Camera* camera, Light* light = NULL)
 {
-	if (material) {
-		glDisable(GL_DEPTH_TEST);
-		material->render(mesh, model, camera, light);
-		glEnable(GL_DEPTH_TEST);
+	if (enable) {
+		if (material) {
+			glDisable(GL_DEPTH_TEST);
+			material->render(mesh, model, camera, light);
+			glEnable(GL_DEPTH_TEST);
+		}
 	}
 }
 
@@ -57,4 +59,8 @@ void SceneNode::renderInMenu()
 		material->renderInMenu();
 		ImGui::TreePop();
 	}
+
+	ImGui::Checkbox("Enable", &enable);
+
+	ImGui::Checkbox("Light", &light);
 }

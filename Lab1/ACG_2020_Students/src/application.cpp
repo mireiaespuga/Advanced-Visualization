@@ -118,25 +118,24 @@ void Application::render(void)
 	camera->enable();
 
 	for (int i = 0; i < light_list.size(); i++) {
-		if (light_list[i]->enable) {
-			light_list[i]->render(camera);
-		}
+		light_list[i]->render(camera);
 	}
 
 	for (int j = 0; j < node_list.size(); j++) {
-		//if (node_list[j]->light == false) {
-			node_list[j]->render(camera, NULL); // si a l'objecte no se li aplica iluminació nomes es renderitzara la primera vegada (sino quedara "cremat")
-		//}
+		if (node_list[j]->light == false) {
+			node_list[j]->render(camera, NULL); // si a l'objecte no se li aplica iluminació nomes es renderitzara la primera vegada 
+		}
 	}
 
+	bool first = true;
 	if (light_list.size() > 0) {
 		for (int i = 0; i < light_list.size(); i++) {
 			if (light_list[i]->enable) {
-				 // si es la primera vegada que es fa el render no saplica blend
+				if (!first) { // si es la primera vegada que es fa el render no s'aplica blend
 					glEnable(GL_BLEND);
 					glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 					glDepthFunc(GL_LEQUAL);
-				
+				}
 				for (int j = 0; j < node_list.size(); j++) {
 					if (node_list[j]->light) { // si l'objecte es veu afectat per les llums
 						node_list[j]->render(camera, light_list[i]);
@@ -144,6 +143,7 @@ void Application::render(void)
 					if (render_wireframe)
 						node_list[j]->renderWireframe(camera);
 				}
+				first = false;
 			}
 		}
 	}
