@@ -22,9 +22,10 @@ public:
 	Mesh* mesh = NULL;
 	Matrix44 model;
 
-	virtual void render(Camera* camera);
+	virtual void render(Camera* camera, Light* light);
 	virtual void renderWireframe(Camera* camera);
 	virtual void renderInMenu();
+
 };
 
 #endif

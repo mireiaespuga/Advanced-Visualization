@@ -8,7 +8,6 @@
 */
 
 #include "includes.h"
-
 #include "framework.h"
 #include "mesh.h"
 #include "camera.h"
@@ -123,6 +122,25 @@ void renderGUI(SDL_Window* window, Application * game)
 				if ( ImGui::TreeNode(node->name.c_str()) )
 				{
 					node->renderInMenu();
+					ImGui::TreePop();
+				}
+				++count;
+				ss.str("");
+			}
+			ImGui::TreePop();
+		}
+
+		//Light
+		if (ImGui::TreeNode("Lights"))
+		{
+			unsigned int count = 0;
+			std::stringstream ss;
+			for (auto& light : game->light_list)
+			{
+				ss << count;
+				if (ImGui::TreeNode(light->name.c_str()))
+				{
+					light->renderInMenu();
 					ImGui::TreePop();
 				}
 				++count;

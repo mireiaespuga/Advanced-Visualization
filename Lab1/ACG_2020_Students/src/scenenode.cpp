@@ -21,12 +21,12 @@ SceneNode::~SceneNode()
 
 }
 
-void SceneNode::render(Camera* camera)
+void SceneNode::render(Camera* camera, Light* light = NULL)
 {
 	if (material) {
-		//glDisable(GL_DEPTH_TEST)
-		material->render(mesh, model, camera);
-		//glEnable(GL_DEPTH_TEST)
+		glDisable(GL_DEPTH_TEST);
+		material->render(mesh, model, camera, light);
+		glEnable(GL_DEPTH_TEST);
 	}
 }
 
