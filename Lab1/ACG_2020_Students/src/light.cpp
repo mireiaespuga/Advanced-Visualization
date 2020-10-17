@@ -71,5 +71,7 @@ void Light::renderInMenu()
 		ImGui::ColorEdit3("Color", (float*)&color); // Edit 3 floats representing a color
 		ImGui::TreePop();
 	}
+	
+	ImGui::Checkbox("Enable", &enable);
 }
 
