@@ -44,21 +44,21 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	camera->lookAt(Vector3(-5.f, 1.5f, 10.f), Vector3(0.f, 0.0f, 0.f), Vector3(0.f, 1.f, 0.f));
 	camera->setPerspective(45.f,window_width/(float)window_height,0.1f,10000.f); //set the projection, we want to be perspective
 
-		
+	Matrix44 model;
+
 	// LIGHT
 	// Create node and add it to the scene
-	SceneNode * lightNode = new SceneNode("Light node");
+	Light* lightNode = new Light();
+	model.setTranslation(0.0f, 2.0f, 2.0f);
+	model.scale(0.2f, 0.2f, 0.2f);
+	lightNode->model = model;
+	lightNode->color = vec3(0.f, 0.f, 1.f);
 	light_list.push_back(lightNode);
-	// Set mesh to node
-	lightNode->mesh = Mesh::Get("data/meshes/sphere.obj");
-	// Set model
-	Matrix44 model0;
-	model0.scale(0.25f, 0.25f, 0.25f);
-	lightNode->model = model0;
-	// Set material
-	StandardMaterial* lightMaterial = new StandardMaterial();
-	lightMaterial->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/flat.fs");
-	lightNode->material = lightMaterial;
+
+	// Create node and add it to the scene
+	Light* lightNode2 = new Light();
+	light_list.push_back(lightNode2);
+
 
 	// SPHERE
 	// Create node and add it to the scene
@@ -67,8 +67,7 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	// Set mesh to node
 	sphereNode->mesh = Mesh::Get("data/meshes/sphere.obj");
 	// Set model
-	Matrix44 model;
-	model.translate(2.0f, 2.0f, 2.0f);
+	model.setTranslation(2.0f, 2.0f, 2.0f);
 	sphereNode->model = model;
 	// Set material
 	StandardMaterial* sphereMaterial = new StandardMaterial();
@@ -84,9 +83,8 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	mesh->createCube();
 	node->mesh = mesh;
 	// Set model
-	Matrix44 model1;
-	model1.scale(20.0f, 20.0f, 20.0f);
-	node->model = model1;
+	model.setScale(50.0f, 50.0f, 50.0f);
+	node->model = model;
 	// Set material
 	StandardMaterial* material = new StandardMaterial();
 	material->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/textureCube.fs");
@@ -108,28 +106,34 @@ void Application::render(void)
 	// Clear the window and the depth buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	//glDepthFunc(GL_EQUAL);
+	//
+
+
 	//set the camera as default
 	camera->enable();
 
+	for (int i = 0; i < light_list.size(); i++) {
+		light_list[i]->render(camera);
+	}
+
 	if (light_list.size() > 0) {
-	for (int j = 0; j < light_list.size(); j++) {
-		for (int i = 0; i < node_list.size(); i++) {
-			//node_list[i]->material->shader->setUniform("u_light_position", Vector3(0.0f, 0.0f, 0.0f));
-			node_list[i]->render(camera);
-
-			if (render_wireframe)
-				node_list[i]->renderWireframe(camera);
-			}
+	for (int i = 0; i < light_list.size(); i++) {
+		if (i > 0) {
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+			glDepthFunc(GL_LEQUAL);
 		}
-	} else {
-		for (int i = 0; i < node_list.size(); i++) {
-			node_list[i]->render(camera);
+		for (int j = 0; j < node_list.size(); j++) {
+			node_list[j]->render(camera, light_list[i]);
 
 			if (render_wireframe)
-				node_list[i]->renderWireframe(camera);
+				node_list[j]->renderWireframe(camera);
+			}
 		}
 	}
 
+	glDisable(GL_BLEND);
 
 	//Draw the floor grid
 	if(render_debug)

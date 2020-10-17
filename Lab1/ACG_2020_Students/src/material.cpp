@@ -13,7 +13,7 @@ StandardMaterial::~StandardMaterial()
 
 }
 
-void StandardMaterial::setUniforms(Camera* camera, Matrix44 model)
+void StandardMaterial::setUniforms(Camera* camera, Matrix44 model, Light* light = NULL)
 {
 	//upload node uniforms
 	shader->setUniform("u_viewprojection", camera->viewprojection_matrix);
@@ -23,15 +23,17 @@ void StandardMaterial::setUniforms(Camera* camera, Matrix44 model)
 
 	shader->setUniform("u_color", color);
 
-	shader->setUniform("u_light_position", Vector3(0.0f, 0.0f, 0.0f));
-	shader->setUniform("u_light_color", Vector3(1.0f, 1.0f, 1.0f));
-
+	if (light) {
+		shader->setUniform("u_light_position", light->model.getTranslation());
+		shader->setUniform("u_light_color", light->color);
+	}
+	
 	if (texture) {
 		shader->setUniform("u_texture", texture);
 	}
 }
 
-void StandardMaterial::render(Mesh* mesh, Matrix44 model, Camera* camera)
+void StandardMaterial::render(Mesh* mesh, Matrix44 model, Camera* camera, Light* light = NULL)
 {
 	//set flags
 	glEnable(GL_DEPTH_TEST);
@@ -43,7 +45,7 @@ void StandardMaterial::render(Mesh* mesh, Matrix44 model, Camera* camera)
 		shader->enable();
 
 		//upload uniforms
-		setUniforms(camera, model);
+		setUniforms(camera, model, light);
 
 		//do the draw call
 		mesh->render(GL_TRIANGLES);
@@ -52,6 +54,7 @@ void StandardMaterial::render(Mesh* mesh, Matrix44 model, Camera* camera)
 		shader->disable();
 	}
 }
+
 
 void StandardMaterial::renderInMenu()
 {

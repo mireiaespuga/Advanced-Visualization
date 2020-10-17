@@ -67,6 +67,9 @@
     <ClCompile Include="..\..\src\scenenode.cpp">
       <Filter>gfx</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\light.cpp">
+      <Filter>gfx</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\extra\hdre.cpp">
       <Filter>extra</Filter>
     </ClCompile>
