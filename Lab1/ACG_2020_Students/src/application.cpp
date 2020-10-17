@@ -44,18 +44,53 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	camera->lookAt(Vector3(-5.f, 1.5f, 10.f), Vector3(0.f, 0.0f, 0.f), Vector3(0.f, 1.f, 0.f));
 	camera->setPerspective(45.f,window_width/(float)window_height,0.1f,10000.f); //set the projection, we want to be perspective
 
-	// Create node and add it to the scene
-	SceneNode * node = new SceneNode("Scene node");
-	node_list.push_back(node);
+	Matrix44 model;
 
+	// LIGHT
+	// Create node and add it to the scene
+	Light* lightNode = new Light();
+	model.setTranslation(0.0f, 2.0f, 2.0f);
+	model.scale(0.2f, 0.2f, 0.2f);
+	lightNode->model = model;
+	lightNode->color = vec3(0.f, 0.f, 1.f);
+	light_list.push_back(lightNode);
+
+	// Create node and add it to the scene
+	Light* lightNode2 = new Light();
+	light_list.push_back(lightNode2);
+
+
+	// SPHERE
+	// Create node and add it to the scene
+	SceneNode* sphereNode = new SceneNode("Sphere node");
+	node_list.push_back(sphereNode);
+	// Set mesh to node
+	sphereNode->mesh = Mesh::Get("data/meshes/sphere.obj");
+	// Set model
+	model.setTranslation(2.0f, 2.0f, 2.0f);
+	sphereNode->model = model;
+	// Set material
+	StandardMaterial* sphereMaterial = new StandardMaterial();
+	sphereMaterial->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/phong.fs");
+	sphereMaterial->texture = Texture::Get("data/textures/blueNoise.png");
+	sphereNode->material = sphereMaterial;
+
+	// SCENE CUBE
+	SceneNode* node = new SceneNode("Scene node");
+	node_list.push_back(node);
 	// Set mesh to node
 	Mesh* mesh = new Mesh();
 	mesh->createCube();
 	node->mesh = mesh;
-
+	// Set model
+	model.setScale(50.0f, 50.0f, 50.0f);
+	node->model = model;
 	// Set material
 	StandardMaterial* material = new StandardMaterial();
-	material->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/flat.fs");
+	material->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/textureCube.fs");
+	Texture* cubemap = new Texture();
+	cubemap->cubemapFromImages("data/environments/city");
+	material->texture = cubemap;
 	node->material = material;
 	
 	//hide the cursor
@@ -71,15 +106,34 @@ void Application::render(void)
 	// Clear the window and the depth buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	//glDepthFunc(GL_EQUAL);
+	//
+
+
 	//set the camera as default
 	camera->enable();
 
-	for (int i = 0; i < node_list.size(); i++) {
-		node_list[i]->render(camera);
-
-		if(render_wireframe)
-			node_list[i]->renderWireframe(camera);
+	for (int i = 0; i < light_list.size(); i++) {
+		light_list[i]->render(camera);
 	}
+
+	if (light_list.size() > 0) {
+	for (int i = 0; i < light_list.size(); i++) {
+		if (i > 0) {
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+			glDepthFunc(GL_LEQUAL);
+		}
+		for (int j = 0; j < node_list.size(); j++) {
+			node_list[j]->render(camera, light_list[i]);
+
+			if (render_wireframe)
+				node_list[j]->renderWireframe(camera);
+			}
+		}
+	}
+
+	glDisable(GL_BLEND);
 
 	//Draw the floor grid
 	if(render_debug)

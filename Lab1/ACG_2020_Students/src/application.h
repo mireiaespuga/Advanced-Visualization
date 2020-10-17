@@ -9,6 +9,7 @@
 #include "camera.h"
 #include "utils.h"
 #include "scenenode.h"
+#include "light.h"
 
 class Application
 {
@@ -16,6 +17,7 @@ public:
 	static Application* instance;
 
 	std::vector< SceneNode* > node_list;
+	std::vector< Light* > light_list;
 
 	//window
 	SDL_Window* window;

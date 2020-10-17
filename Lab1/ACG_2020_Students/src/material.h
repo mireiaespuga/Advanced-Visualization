@@ -1,10 +1,12 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
+#include "light.h"
 #include "framework.h"
 #include "shader.h"
 #include "camera.h"
 #include "mesh.h"
+
 
 class Material {
 public:
@@ -13,8 +15,8 @@ public:
 	Texture* texture = NULL;
 	vec4 color;
 
-	virtual void setUniforms(Camera* camera, Matrix44 model) = 0;
-	virtual void render(Mesh* mesh, Matrix44 model, Camera * camera) = 0;
+	virtual void setUniforms(Camera* camera, Matrix44 model, Light* light) = 0;
+	virtual void render(Mesh* mesh, Matrix44 model, Camera * camera, Light* light) = 0;
 	virtual void renderInMenu() = 0;
 };
 
@@ -24,8 +26,8 @@ public:
 	StandardMaterial();
 	~StandardMaterial();
 
-	void setUniforms(Camera* camera, Matrix44 model);
-	void render(Mesh* mesh, Matrix44 model, Camera * camera);
+	void setUniforms(Camera* camera, Matrix44 model, Light* light );
+	void render(Mesh* mesh, Matrix44 model, Camera * camera, Light* light );
 	void renderInMenu();
 };
 
