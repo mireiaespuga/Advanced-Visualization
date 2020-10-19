@@ -11,9 +11,68 @@ SceneNode::SceneNode()
 }
 
 
-SceneNode::SceneNode(const char * name)
+SceneNode::SceneNode(const char* name, eNodeType nodeType)
 {
 	this->name = name;
+	Mesh* mesh = new Mesh();
+	StandardMaterial* material = new StandardMaterial();
+	Texture* texture = new Texture();
+
+	switch (nodeType)
+	{
+	case CUBEMAP:
+		this->light = false;
+		// Set mesh to node
+		mesh->createCube();
+		this->mesh = mesh;
+		// Set model
+		model.setScale(50.0f, 50.0f, 50.0f);
+		this->model = model;
+
+		// Set material
+		material->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/textureCube.fs");
+		texture->cubemapFromImages("data/environments/city");
+		material->texture = texture;
+		this->material = material;
+
+		break;
+
+	case REFLECT:
+		// Set mesh to node
+		this->light = false;
+		this->mesh = Mesh::Get("data/meshes/sphere.obj");
+
+		// Set model
+		model.setTranslation(2.0f, 2.0f, 2.0f);
+		this->model = model;
+
+		// Set material
+		material->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/reflect.fs");
+		texture->cubemapFromImages("data/environments/city");
+		material->texture = texture;
+		this->material = material;
+		break;
+
+	case OBJECT: //TODO: TREURE TEXTURA A PHONG I Q FUNCIONI
+		// Set mesh to node
+		this->light = true;
+		this->mesh = Mesh::Get("data/meshes/sphere.obj");
+
+		// Set model
+		model.setTranslation(2.0f, 2.0f, 2.0f);
+		this->model = model;
+
+		// Set material
+		material->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/phong.fs"); 
+		texture = Texture::Get("data/textures/blueNoise.png");
+		material->texture = texture;
+		this->material = material;
+		break;
+	default:
+	
+		break;
+	}
+
 }
 
 SceneNode::~SceneNode()

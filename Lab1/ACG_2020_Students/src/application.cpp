@@ -68,38 +68,13 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 
 	// SPHERE
 	// Create node and add it to the scene
-	SceneNode* sphereNode = new SceneNode("Sphere node");
+	SceneNode* sphereNode = new SceneNode("Sphere node", SceneNode::REFLECT);
 	node_list.push_back(sphereNode);
-	// Set mesh to node
-	sphereNode->mesh = Mesh::Get("data/meshes/sphere.obj");
-	// Set model
-	model.setTranslation(2.0f, 2.0f, 2.0f);
-	sphereNode->model = model;
-	// Set material
-	StandardMaterial* sphereMaterial = new StandardMaterial();
-	sphereMaterial->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/reflect.fs");
-	//sphereMaterial->texture = Texture::Get("data/textures/blueNoise.png");
-	sphereNode->material = sphereMaterial;
 
 	// SCENE CUBE
-	SceneNode* node = new SceneNode("Scene node");
+	SceneNode* node = new SceneNode("Scene node", SceneNode::CUBEMAP);
 	node_list.push_back(node);
-	node->light = false;
-	// Set mesh to node
-	Mesh* mesh = new Mesh();
-	mesh->createCube();
-	node->mesh = mesh;
-	// Set model
-	model.setScale(50.0f, 50.0f, 50.0f);
-	node->model = model;
-	// Set material
-	StandardMaterial* material = new StandardMaterial();
-	material->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/textureCube.fs");
-	Texture* cubemap = new Texture();
-	cubemap->cubemapFromImages("data/environments/snow");
-	material->texture = cubemap;
-	node->material = material;
-	sphereMaterial->texture = cubemap;
+
 	
 	//hide the cursor
 	SDL_ShowCursor(!mouse_locked); //hide or show the mouse
