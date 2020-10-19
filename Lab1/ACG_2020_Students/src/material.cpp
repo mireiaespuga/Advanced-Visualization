@@ -5,6 +5,10 @@
 StandardMaterial::StandardMaterial()
 {
 	color = vec4(1.f, 1.f, 1.f, 1.f);
+	Ka = vec3(1.0f, 1.0f, 1.0f);
+	Kd = vec3(1.0f, 1.0f, 1.0f);
+	Ks = vec3(1.0f, 1.0f, 1.0f);
+	alpha = 30.0;
 	shader = Shader::Get("data/shaders/basic.vs", "data/shaders/flat.fs");
 }
 
@@ -25,11 +29,17 @@ void StandardMaterial::setUniforms(Camera* camera, Matrix44 model, Light* light 
 
 	if (light) {
 		shader->setUniform("u_light_position", light->model.getTranslation());
-		shader->setUniform("u_light_color", light->color);
-		shader->setUniform("u_has_light", 0.0);
+		shader->setUniform("Id", light->Id);
+		shader->setUniform("Ia", light->Ia);
+		shader->setUniform("Is", light->Is);
+		shader->setUniform("Ka", Ka);
+		shader->setUniform("Kd", Kd);
+		shader->setUniform("Ks", Ks);
+		shader->setUniform("alpha", alpha);
+		shader->setUniform("u_has_light", 1.0);
 	}
 	else {
-		shader->setUniform("u_has_light", 1.0);
+		shader->setUniform("u_has_light", 0.0);
 	}
 	
 	if (texture) {
@@ -63,6 +73,12 @@ void StandardMaterial::render(Mesh* mesh, Matrix44 model, Camera* camera, Light*
 void StandardMaterial::renderInMenu()
 {
 	ImGui::ColorEdit3("Color", (float*)&color); // Edit 3 floats representing a color
+
+	ImGui::SliderFloat3("Ka", (float*)&Ka, 0.0f, 1.0f);
+	ImGui::SliderFloat3("Ks", (float*)&Ks, 0.0f, 1.0f);
+	ImGui::SliderFloat3("Kd", (float*)&Kd, 0.0f, 1.0f);
+	ImGui::SliderFloat("Shine", &alpha, 0.07f, 100.0f);
+
 }
 
 WireframeMaterial::WireframeMaterial()

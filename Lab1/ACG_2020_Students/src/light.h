@@ -17,7 +17,9 @@ public:
 	~Light();
 
 	std::string name;
-	vec3 color;
+	vec3 Ia;
+	vec3 Is;
+	vec3 Id;
 	Mesh* mesh = NULL;
 	Shader* shader = NULL;
 	Matrix44 model;

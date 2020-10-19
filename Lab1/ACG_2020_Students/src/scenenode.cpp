@@ -49,7 +49,7 @@ void SceneNode::renderInMenu()
 		ImGui::DragFloat3("Rotation", matrixRotation, 0.1f);
 		ImGui::DragFloat3("Scale", matrixScale, 0.1f);
 		ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, model.m);
-		
+
 		ImGui::TreePop();
 	}
 

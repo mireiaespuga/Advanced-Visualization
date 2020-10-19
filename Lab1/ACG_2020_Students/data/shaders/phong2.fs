@@ -8,20 +8,14 @@ varying vec4 v_color;
 uniform vec4 u_color;
 uniform sampler2D u_texture;
 uniform vec3 u_light_position;
-uniform vec3 Id;
-uniform vec3 Ia;
-uniform vec3 Is;
+uniform vec3 u_light_color;
 uniform float u_has_light;
-uniform vec3 Kd;
-uniform vec3 Ka;
-uniform vec3 Ks;
-uniform float alpha;
 
 void main()
-{	
+{
 	vec4 color;
-	if (u_has_light == 1.0) {
 
+	if (u_has_light == 0) {
 		//here we store the L vector
 		vec3 L;
 
@@ -32,10 +26,10 @@ void main()
 		L = normalize(L);
 	
 		//here we can store the total amount of light
-		vec3 Ip= vec3(0.0);
+		vec3 light = vec3(0.0);
 
 		//lets add the ambient light first
-		Ip += Ka * Ia;
+		//light += u_ambient_light;
 
 		//very important to normalize as they come
 		//interpolated so normalization is lost
@@ -48,23 +42,14 @@ void main()
 		NdotL = clamp( NdotL, 0.0, 1.0 );
 
 		//store the amount of diffuse light
-		Ip+= Kd * NdotL * Id;
-		// 
-		//compute refletion
-		vec3 R = reflect(-L,N);
-		float RdotV = dot(R,v_position);
+		light += NdotL * u_light_color;
 
-		//light cannot be negative (but the dot product can)
-		RdotV = clamp( RdotV, 0.0, 1.0);
-
-		//store the amount of diffuse light
-		Ip += Ks*Is*pow(RdotV, alpha);
 		vec2 uv = v_uv;
 
 		color = u_color * texture2D( u_texture, uv );
 
 		//apply to final pixel color
-		color.xyz *= Ip;
+		color.xyz *= light;
 
 	} else {
 		vec2 uv = v_uv;
@@ -72,6 +57,5 @@ void main()
 		color = u_color * texture2D( u_texture, uv );
 	}
 
-	gl_FragColor = color;
-
+	gl_FragColor = color; 
 }

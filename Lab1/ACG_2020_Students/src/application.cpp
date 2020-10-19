@@ -52,20 +52,19 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	model.setTranslation(0.0f, 2.0f, 2.0f);
 	model.scale(0.2f, 0.2f, 0.2f);
 	lightNode->model = model;
-	lightNode->color = vec3(0.f, 0.f, 1.f);
+	lightNode->Id = vec3(0.f, 0.f, 1.f);
 	light_list.push_back(lightNode);
 
 	Light* lightNode1 = new Light();
 	model.setTranslation(0.0f, 0.0f, 2.0f);
 	model.scale(0.2f, 0.2f, 0.2f);
 	lightNode1->model = model;
-	lightNode1->color = vec3(1.f, 0.f, 0.f);
+	lightNode1->Id = vec3(1.f, 0.f, 0.f);
 	light_list.push_back(lightNode1);
 
 	// Create node and add it to the scene
 	Light* lightNode2 = new Light();
 	light_list.push_back(lightNode2);
-
 
 	// SPHERE
 	// Create node and add it to the scene
@@ -78,8 +77,8 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	sphereNode->model = model;
 	// Set material
 	StandardMaterial* sphereMaterial = new StandardMaterial();
-	sphereMaterial->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/phong.fs");
-	sphereMaterial->texture = Texture::Get("data/textures/blueNoise.png");
+	sphereMaterial->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/reflect.fs");
+	//sphereMaterial->texture = Texture::Get("data/textures/blueNoise.png");
 	sphereNode->material = sphereMaterial;
 
 	// SCENE CUBE
@@ -97,9 +96,10 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	StandardMaterial* material = new StandardMaterial();
 	material->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/textureCube.fs");
 	Texture* cubemap = new Texture();
-	cubemap->cubemapFromImages("data/environments/city");
+	cubemap->cubemapFromImages("data/environments/snow");
 	material->texture = cubemap;
 	node->material = material;
+	sphereMaterial->texture = cubemap;
 	
 	//hide the cursor
 	SDL_ShowCursor(!mouse_locked); //hide or show the mouse
