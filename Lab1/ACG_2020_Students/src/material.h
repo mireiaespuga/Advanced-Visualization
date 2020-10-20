@@ -14,6 +14,10 @@ public:
 	Shader* shader = NULL;
 	Texture* texture = NULL;
 	vec4 color;
+	vec3 Ka;
+	vec3 Ks;
+	vec3 Kd;
+	float alpha;
 
 	virtual void setUniforms(Camera* camera, Matrix44 model, Light* light) = 0;
 	virtual void render(Mesh* mesh, Matrix44 model, Camera * camera, Light* light) = 0;
