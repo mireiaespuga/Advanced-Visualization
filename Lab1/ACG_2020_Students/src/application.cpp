@@ -45,37 +45,55 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	camera->setPerspective(45.f,window_width/(float)window_height,0.1f,10000.f); //set the projection, we want to be perspective
 
 	Matrix44 model;
+	setSkyTexture(Application::SNOW);
+
+	// NODES
+	// Create a skyBox
+	SceneNode* node = new SceneNode("Scene node", SceneNode::CUBEMAP, skybox_texture);
+	node_list.push_back(node);
+
+	// Create node and add it to the scene
+	SceneNode* sphereNode = new SceneNode("Sphere reflect", SceneNode::eNodeType::REFLECT, skybox_texture);
+	node_list.push_back(sphereNode);
+	sphereNode->model.setTranslation(2.0f, 2.0f, 2.0f);
+	sphereNode->model.scale(5.0f, 5.0f, 5.0f);
+	sphereNode->mesh = Mesh::Get("data/models/helmet/helmet.obj");
+
+	// Create node and add it to the scene
+	SceneNode* bench = new SceneNode("Bench", SceneNode::OBJECT, NULL);
+	node_list.push_back(bench);
+	bench->model.setTranslation(-2.0f, -2.0f, -2.0f);
+	bench->model.scale(5.0f, 5.0f, 5.0f);
+	bench->mesh = Mesh::Get("data/models/bench/bench.obj");
+	bench->material->texture = Texture::Get("data/models/bench/albedo.png");
+
+	// Create node and add it to the scene
+	SceneNode* helmet = new SceneNode("Helmet", SceneNode::OBJECT, NULL);
+	node_list.push_back(helmet);
+	helmet->model.setTranslation(0.0f, -2.0f, 0.0f);
+	helmet->mesh = Mesh::Get("data/models/helmet/helmet.obj");
+	helmet->material->texture = Texture::Get("data/models/helmet/albedo.png");
+
+	// Create node and add it to the scene
+	SceneNode* lantern = new SceneNode("Lantern", SceneNode::eNodeType::OBJECT, NULL);
+	node_list.push_back(lantern);
+	lantern->model.setTranslation(-5.0f, -5.0f, -5.0f);
+	lantern->model.scale(0.05f, 0.05f, 0.05f);
+	lantern->mesh = Mesh::Get("data/models/lantern/lantern.obj");
+	lantern->material->texture = Texture::Get("data/models/lantern/albedo.png");
+
 
 	// LIGHT
-	// Create node and add it to the scene
-	Light* lightNode = new Light();
+	Light* lightNode1 = new Light();
 	model.setTranslation(0.0f, 2.0f, 2.0f);
 	model.scale(0.2f, 0.2f, 0.2f);
-	lightNode->model = model;
-	lightNode->Id = vec3(0.f, 0.f, 1.f);
-	light_list.push_back(lightNode);
-
-	Light* lightNode1 = new Light();
-	model.setTranslation(0.0f, 0.0f, 2.0f);
-	model.scale(0.2f, 0.2f, 0.2f);
 	lightNode1->model = model;
-	lightNode1->Id = vec3(1.f, 0.f, 0.f);
+	lightNode1->Id = vec3(0.f, 0.f, 1.f);
 	light_list.push_back(lightNode1);
 
-	// Create node and add it to the scene
 	Light* lightNode2 = new Light();
 	light_list.push_back(lightNode2);
 
-	// SPHERE
-	// Create node and add it to the scene
-	SceneNode* sphereNode = new SceneNode("Sphere node", SceneNode::REFLECT);
-	node_list.push_back(sphereNode);
-
-	// SCENE CUBE
-	SceneNode* node = new SceneNode("Scene node", SceneNode::CUBEMAP);
-	node_list.push_back(node);
-
-	
 	//hide the cursor
 	SDL_ShowCursor(!mouse_locked); //hide or show the mouse
 }
@@ -92,27 +110,28 @@ void Application::render(void)
 	//set the camera as default
 	camera->enable();
 
-	for (int i = 0; i < light_list.size(); i++) {
+	for (int i = 0; i < light_list.size(); i++) { // render the lights
 		light_list[i]->render(camera);
 	}
 
 	for (int j = 0; j < node_list.size(); j++) {
 		if (node_list[j]->light == false) {
-			node_list[j]->render(camera, NULL); // si a l'objecte no se li aplica iluminació nomes es renderitzara la primera vegada 
+			node_list[j]->render(camera, NULL); // if the object is not affected by ilumination it will be rendered just one time
 		}
 	}
 
+	// ilumination multi pass
 	bool first = true;
 	if (light_list.size() > 0) {
 		for (int i = 0; i < light_list.size(); i++) {
 			if (light_list[i]->enable) {
-				if (!first) { // si es la primera vegada que es fa el render no s'aplica blend
+				if (!first) { // the first time blend is not activated
 					glEnable(GL_BLEND);
 					glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 					glDepthFunc(GL_LEQUAL);
 				}
 				for (int j = 0; j < node_list.size(); j++) {
-					if (node_list[j]->light) { // si l'objecte es veu afectat per les llums
+					if (node_list[j]->light) { // only objects that are afected by light will be rendered
 						node_list[j]->render(camera, light_list[i]);
 					} 
 					if (render_wireframe)
@@ -188,7 +207,36 @@ void Application::update(double seconds_elapsed)
 
 void Application::renderInMenu()
 {
-	// Show and edit your global variables on the fly here
+	bool changed = false;
+	changed |= ImGui::Combo("Sky", (int*)&skyType, "CITY\0SNOW\0DRAGON", 3);
+	if (changed && skyType == CITY)
+		setSkyTexture(CITY);
+	else if (changed && skyType == SNOW)
+		setSkyTexture(SNOW);
+	else if (changed && skyType == DRAGON)
+		setSkyTexture(DRAGON);
+}
+
+void Application::setSkyTexture(eSkyTexture skyTexture)
+{
+	skyType = skyTexture;
+	switch (skyTexture)
+	{
+	case CITY:
+		skybox_texture->cubemapFromImages("data/environments/city");
+		break;
+
+	case SNOW:
+		skybox_texture->cubemapFromImages("data/environments/snow");
+		break;
+
+	case DRAGON:
+		skybox_texture->cubemapFromImages("data/environments/dragonvale");
+		break;
+
+	default:
+		break;
+	}
 }
 
 //Keyboard event handler (sync input)

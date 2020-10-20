@@ -12,6 +12,7 @@ uniform vec3 Id;
 uniform vec3 Ia;
 uniform vec3 Is;
 uniform float u_has_light;
+uniform float u_has_texture;
 uniform vec3 Kd;
 uniform vec3 Ka;
 uniform vec3 Ks;
@@ -59,17 +60,24 @@ void main()
 
 		//store the amount of diffuse light
 		Ip += Ks*Is*pow(RdotV, alpha);
-		vec2 uv = v_uv;
 
-		color = u_color * texture2D( u_texture, uv );
+		if (u_has_texture == 1.0) {
+			vec2 uv = v_uv;
+			color = u_color * texture2D( u_texture, uv );
+		} else {
+			color = u_color;
+		}
 
 		//apply to final pixel color
 		color.xyz *= Ip;
 
 	} else {
-		vec2 uv = v_uv;
-
-		color = u_color * texture2D( u_texture, uv );
+		if (u_has_texture == 1.0) {
+			vec2 uv = v_uv;
+			color = u_color * texture2D( u_texture, uv );
+		} else {
+			color = u_color;
+		}
 	}
 
 	gl_FragColor = color;

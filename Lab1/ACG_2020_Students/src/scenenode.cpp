@@ -11,68 +11,39 @@ SceneNode::SceneNode()
 }
 
 
-SceneNode::SceneNode(const char* name, eNodeType nodeType)
+SceneNode::SceneNode(const char* name, eNodeType nodeType, Texture* texture)
 {
 	this->name = name;
 	Mesh* mesh = new Mesh();
 	StandardMaterial* material = new StandardMaterial();
-	Texture* texture = new Texture();
-
+	this->nodeType = nodeType;
 	switch (nodeType)
 	{
 	case CUBEMAP:
 		this->light = false;
-		// Set mesh to node
 		mesh->createCube();
 		this->mesh = mesh;
-		// Set model
-		model.setScale(50.0f, 50.0f, 50.0f);
-		this->model = model;
-
-		// Set material
+		this->model.setScale(50.0f, 50.0f, 50.0f);
 		material->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/textureCube.fs");
-		texture->cubemapFromImages("data/environments/city");
 		material->texture = texture;
 		this->material = material;
-
 		break;
 
 	case REFLECT:
-		// Set mesh to node
 		this->light = false;
-		this->mesh = Mesh::Get("data/meshes/sphere.obj");
-
-		// Set model
-		model.setTranslation(2.0f, 2.0f, 2.0f);
-		this->model = model;
-
-		// Set material
 		material->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/reflect.fs");
-		texture->cubemapFromImages("data/environments/city");
 		material->texture = texture;
 		this->material = material;
 		break;
 
-	case OBJECT: //TODO: TREURE TEXTURA A PHONG I Q FUNCIONI
-		// Set mesh to node
-		this->light = true;
-		this->mesh = Mesh::Get("data/meshes/sphere.obj");
-
-		// Set model
-		model.setTranslation(2.0f, 2.0f, 2.0f);
-		this->model = model;
-
-		// Set material
+	case OBJECT: 
 		material->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/phong.fs"); 
-		texture = Texture::Get("data/textures/blueNoise.png");
-		material->texture = texture;
 		this->material = material;
 		break;
+
 	default:
-	
 		break;
 	}
-
 }
 
 SceneNode::~SceneNode()
@@ -99,27 +70,28 @@ void SceneNode::renderWireframe(Camera* camera)
 
 void SceneNode::renderInMenu()
 {
-	//Model edit
-	if (ImGui::TreeNode("Model")) 
-	{
-		float matrixTranslation[3], matrixRotation[3], matrixScale[3];
-		ImGuizmo::DecomposeMatrixToComponents(model.m, matrixTranslation, matrixRotation, matrixScale);
-		ImGui::DragFloat3("Position", matrixTranslation, 0.1f);
-		ImGui::DragFloat3("Rotation", matrixRotation, 0.1f);
-		ImGui::DragFloat3("Scale", matrixScale, 0.1f);
-		ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, model.m);
-
-		ImGui::TreePop();
-	}
-
-	//Material
-	if (material && ImGui::TreeNode("Material"))
-	{
-		material->renderInMenu();
-		ImGui::TreePop();
-	}
-
 	ImGui::Checkbox("Enable", &enable);
+	//Model edit
+	if (nodeType == eNodeType::OBJECT || nodeType == eNodeType::REFLECT) {
+		if (ImGui::TreeNode("Model"))
+		{
+			float matrixTranslation[3], matrixRotation[3], matrixScale[3];
+			ImGuizmo::DecomposeMatrixToComponents(model.m, matrixTranslation, matrixRotation, matrixScale);
+			ImGui::DragFloat3("Position", matrixTranslation, 0.1f);
+			ImGui::DragFloat3("Rotation", matrixRotation, 0.1f);
+			ImGui::DragFloat3("Scale", matrixScale, 0.1f);
+			ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, model.m);
 
-	ImGui::Checkbox("Light", &light);
+			ImGui::TreePop();
+		}
+		if (nodeType == eNodeType::OBJECT) {
+			//Material
+			if (material && ImGui::TreeNode("Material"))
+			{
+				material->renderInMenu();
+				ImGui::TreePop();
+			}
+			ImGui::Checkbox("Light", &light);
+		}
+	}
 }

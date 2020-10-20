@@ -10,6 +10,7 @@
 #include "utils.h"
 #include "scenenode.h"
 #include "light.h"
+#include "texture.h"
 
 class Application
 {
@@ -18,6 +19,9 @@ public:
 
 	std::vector< SceneNode* > node_list;
 	std::vector< Light* > light_list;
+	Texture* skybox_texture = new Texture();
+	enum eSkyTexture { CITY, SNOW, DRAGON, NONE };
+	char skyType;
 
 	//window
 	SDL_Window* window;
@@ -42,6 +46,8 @@ public:
 	void render( void );
 	void update( double dt );
 	void renderInMenu();
+	void setSkyTexture(eSkyTexture skyTexture);
+
 
 	//events
 	void onKeyDown( SDL_KeyboardEvent event );
