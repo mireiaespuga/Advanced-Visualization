@@ -44,6 +44,10 @@ void StandardMaterial::setUniforms(Camera* camera, Matrix44 model, Light* light 
 	
 	if (texture) {
 		shader->setUniform("u_texture", texture);
+		shader->setUniform("u_has_texture", 1.0);
+	} 
+	else {
+		shader->setUniform("u_has_texture", 0.0);
 	}
 }
 

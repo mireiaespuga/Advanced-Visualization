@@ -24,6 +24,7 @@ public:
 	Shader* shader = NULL;
 	Matrix44 model;
 	bool enable = true;
+	bool show_light = true;
 
 
 	virtual void renderInMenu();

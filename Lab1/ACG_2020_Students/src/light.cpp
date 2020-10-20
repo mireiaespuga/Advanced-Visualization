@@ -22,7 +22,7 @@ Light::~Light()
 
 void Light::render(Camera* camera)
 {
-	if (enable) {
+	if (enable && show_light) {
 		//set flags
 		glEnable(GL_DEPTH_TEST);
 		glDisable(GL_CULL_FACE);
@@ -67,5 +67,6 @@ void Light::renderInMenu()
 	ImGui::ColorEdit3("Specular", (float*)&Is); // Edit 3 floats representing a color
 	
 	ImGui::Checkbox("Enable", &enable);
+	ImGui::Checkbox("Show", &show_light);
 }
 
