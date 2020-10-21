@@ -28,6 +28,10 @@ void main()
 
 		//vector from the point to the light
 		L = u_light_position - v_world_position;
+		float light_distance = length(L);
+
+		//compute a linear attenuation factor
+		float att_factor = 1.0 / light_distance;
 
 		//we ignore the light distance for now
 		L = normalize(L);
@@ -69,7 +73,7 @@ void main()
 		}
 
 		//apply to final pixel color
-		color.xyz *= Ip;
+		color.xyz *= Ip * att_factor;
 
 	} else {
 		if (u_has_texture == 1.0) {
