@@ -53,7 +53,7 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	node_list.push_back(node);
 
 	// Create node and add it to the scene
-	SceneNode* sphereNode = new SceneNode("Sphere reflect", SceneNode::eNodeType::REFLECT, skybox_texture);
+	SceneNode* sphereNode = new SceneNode("Reflect", SceneNode::REFLECT, skybox_texture);
 	node_list.push_back(sphereNode);
 	sphereNode->model.setTranslation(2.0f, 2.0f, 2.0f);
 	sphereNode->model.scale(5.0f, 5.0f, 5.0f);
@@ -81,7 +81,6 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	lantern->model.scale(0.05f, 0.05f, 0.05f);
 	lantern->mesh = Mesh::Get("data/models/lantern/lantern.obj");
 	lantern->material->texture = Texture::Get("data/models/lantern/albedo.png");
-
 
 	// LIGHT
 	Light* lightNode1 = new Light();

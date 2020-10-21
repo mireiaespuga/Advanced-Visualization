@@ -23,6 +23,7 @@ public:
 	enum eSkyTexture { CITY, SNOW, DRAGON, NONE };
 	char skyType;
 
+
 	//window
 	SDL_Window* window;
 	int window_width;
