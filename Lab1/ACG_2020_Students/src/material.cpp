@@ -25,6 +25,7 @@ void StandardMaterial::setUniforms(Camera* camera, Matrix44 model, Light* light 
 
 	if (light) {
 		shader->setUniform("u_light_position", light->model.getTranslation());
+		shader->setUniform("u_light_maxdist", light->maxDist);
 		shader->setUniform("Id", light->Id);
 		shader->setUniform("Ia", light->Ia);
 		shader->setUniform("Is", light->Is);
