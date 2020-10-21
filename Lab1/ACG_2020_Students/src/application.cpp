@@ -51,6 +51,8 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	// Create a skyBox
 	SceneNode* node = new SceneNode("Scene node", SceneNode::CUBEMAP, skybox_texture);
 	node_list.push_back(node);
+	node->model.setTranslation(camera->eye.x, camera->eye.y, camera->eye.z);
+	node->model.scale(50.0f, 50.0f, 50.0f);
 
 	// Create node and add it to the scene
 	SceneNode* sphereNode = new SceneNode("Reflect", SceneNode::REFLECT, skybox_texture);
@@ -75,7 +77,7 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	helmet->material->texture = Texture::Get("data/models/helmet/albedo.png");
 
 	// Create node and add it to the scene
-	SceneNode* lantern = new SceneNode("Lantern", SceneNode::eNodeType::OBJECT, NULL);
+	SceneNode* lantern = new SceneNode("Lantern", SceneNode::OBJECT, NULL);
 	node_list.push_back(lantern);
 	lantern->model.setTranslation(-5.0f, -5.0f, -5.0f);
 	lantern->model.scale(0.05f, 0.05f, 0.05f);

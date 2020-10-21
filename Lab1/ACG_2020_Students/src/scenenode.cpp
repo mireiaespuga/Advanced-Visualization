@@ -55,6 +55,10 @@ void SceneNode::render(Camera* camera, Light* light = NULL)
 {
 	if (enable) {
 		if (material) {
+			if (this->nodeType == CUBEMAP) {
+				this->model.setTranslation(camera->eye.x, camera->eye.y, camera->eye.z);
+				this->model.scale(50.0f, 50.0f, 50.0f);
+			}
 			glDisable(GL_DEPTH_TEST);
 			material->render(mesh, model, camera, light);
 			glEnable(GL_DEPTH_TEST);

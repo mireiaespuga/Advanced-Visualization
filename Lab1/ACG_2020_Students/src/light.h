@@ -20,6 +20,7 @@ public:
 	vec3 Ia;
 	vec3 Is;
 	vec3 Id;
+	float maxDist;
 	Mesh* mesh = NULL;
 	Shader* shader = NULL;
 	Matrix44 model;
