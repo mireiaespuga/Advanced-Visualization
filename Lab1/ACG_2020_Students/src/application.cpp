@@ -57,7 +57,7 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	// Create node and add it to the scene
 	SceneNode* sphereNode = new SceneNode("Reflect", SceneNode::REFLECT, skybox_texture);
 	node_list.push_back(sphereNode);
-	sphereNode->model.setTranslation(2.0f, 2.0f, 2.0f);
+	sphereNode->model.setTranslation(5.0f, -7.0f, 6.0f);
 	sphereNode->model.scale(5.0f, 5.0f, 5.0f);
 	sphereNode->mesh = Mesh::Get("data/models/helmet/helmet.obj");
 
@@ -70,29 +70,32 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	bench->material->texture = Texture::Get("data/models/bench/albedo.png");
 
 	// Create node and add it to the scene
-	SceneNode* helmet = new SceneNode("Helmet", SceneNode::OBJECT, NULL);
-	node_list.push_back(helmet);
-	helmet->model.setTranslation(0.0f, -2.0f, 0.0f);
-	helmet->mesh = Mesh::Get("data/models/helmet/helmet.obj");
-	helmet->material->texture = Texture::Get("data/models/helmet/albedo.png");
-
-	// Create node and add it to the scene
 	SceneNode* lantern = new SceneNode("Lantern", SceneNode::OBJECT, NULL);
 	node_list.push_back(lantern);
-	lantern->model.setTranslation(-5.0f, -5.0f, -5.0f);
+	lantern->model.setTranslation(-8.0f, -5.0f, -5.0f);
 	lantern->model.scale(0.05f, 0.05f, 0.05f);
 	lantern->mesh = Mesh::Get("data/models/lantern/lantern.obj");
 	lantern->material->texture = Texture::Get("data/models/lantern/albedo.png");
+	// Create node and add it to the scene
+	SceneNode* phongObj = new SceneNode("phongObj", SceneNode::BASIC, NULL);
+	node_list.push_back(phongObj);
+	phongObj->model.setTranslation(5.0f, 2.0f, 2.0f);
+	phongObj->mesh = Mesh::Get("data/meshes/sphere.obj");
+	phongObj->material->texture = Texture::Get("data/textures/normal.png");
 
 	// LIGHT
 	Light* lightNode1 = new Light();
 	model.setTranslation(0.0f, 2.0f, 2.0f);
-	model.scale(0.2f, 0.2f, 0.2f);
+	model.scale(0.5f, 0.5f, 0.5f);
 	lightNode1->model = model;
 	lightNode1->Id = vec3(0.f, 0.f, 1.f);
 	light_list.push_back(lightNode1);
 
 	Light* lightNode2 = new Light();
+	model.setTranslation(-6.0f, 1.0f, 5.0f);
+	model.scale(0.5f, 0.5f, 0.5f);
+	lightNode2->model = model;
+	lightNode2->maxDist = 23.0f;
 	light_list.push_back(lightNode2);
 
 	//hide the cursor

@@ -109,8 +109,32 @@ void StandardMaterial::setMaterial(eMatType material)
 		break;
 	}
 }
+void StandardMaterial::setTex(eTexType texturetype)
+{
+	texType = texturetype;
+	switch (texturetype)
+	{
+	case NORMAL:
+		texture = Texture::Get("data/textures/normal.png");
+		break;
 
-void StandardMaterial::renderInMenu()
+	case ROUGHNESS:
+		texture = Texture::Get("data/textures/roughness.png");
+		break;
+
+	case METALNESS:
+		texture = Texture::Get("data/textures/metalness.png");
+		break;
+
+	case COLOR:
+		texture = Texture::Get("data/textures/color.png");
+		break;
+	default:
+		break;
+	}
+}
+
+void StandardMaterial::renderInMenu(bool basic=false)
 {
 	//Material
 	if (ImGui::TreeNode("Custom"))
@@ -135,6 +159,20 @@ void StandardMaterial::renderInMenu()
 			setMaterial(BLACKRUBBER);
 		else if (changed && matType == GOLD)
 			setMaterial(GOLD);
+		ImGui::TreePop();
+	}
+	if (basic && ImGui::TreeNode("Basic Textures"))
+	{
+		bool changed = false;
+		changed |= ImGui::Combo("Ex", (int*)&texType, "NORMAL\0ROUGHNESS\0METALNESS\0COLOR", 4);
+		if (changed && texType == NORMAL)
+			setTex(NORMAL);
+		else if (changed && texType == ROUGHNESS)
+			setTex(ROUGHNESS);
+		else if (changed && texType == METALNESS)
+			setTex(METALNESS);
+		else if (changed && texType == COLOR)
+			setTex(COLOR);
 		ImGui::TreePop();
 	}
 
@@ -168,4 +206,8 @@ void WireframeMaterial::render(Mesh* mesh, Matrix44 model, Camera * camera)
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
+}
+
+void Material::setTex(eTexType texturetype)
+{
 }

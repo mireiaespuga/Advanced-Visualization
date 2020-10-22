@@ -40,7 +40,11 @@ SceneNode::SceneNode(const char* name, eNodeType nodeType, Texture* texture)
 		material->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/phong.fs"); 
 		this->material = material;
 		break;
+	case BASIC:
+		material->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/phong.fs");
+		this->material = material;
 
+		break;
 	default:
 		break;
 	}
@@ -76,7 +80,7 @@ void SceneNode::renderInMenu()
 {
 	ImGui::Checkbox("Enable", &enable);
 	//Model edit
-	if (nodeType == eNodeType::OBJECT || nodeType == eNodeType::REFLECT) {
+	if (nodeType == eNodeType::OBJECT || nodeType == eNodeType::REFLECT || nodeType == eNodeType::BASIC) {
 		if (ImGui::TreeNode("Model"))
 		{
 			float matrixTranslation[3], matrixRotation[3], matrixScale[3];
@@ -88,11 +92,11 @@ void SceneNode::renderInMenu()
 
 			ImGui::TreePop();
 		}
-		if (nodeType == eNodeType::OBJECT) {
+		if (nodeType == eNodeType::OBJECT || nodeType == eNodeType::BASIC) {
 			//Material
 			if (material && ImGui::TreeNode("Material"))
 			{
-				material->renderInMenu();
+				material->renderInMenu(nodeType == eNodeType::BASIC);
 				ImGui::TreePop();
 			}
 			ImGui::Checkbox("Light", &light);
