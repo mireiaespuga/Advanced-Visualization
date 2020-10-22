@@ -76,26 +76,28 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	lantern->model.scale(0.05f, 0.05f, 0.05f);
 	lantern->mesh = Mesh::Get("data/models/lantern/lantern.obj");
 	lantern->material->texture = Texture::Get("data/models/lantern/albedo.png");
+
 	// Create node and add it to the scene
-	SceneNode* phongObj = new SceneNode("phongObj", SceneNode::BASIC, NULL);
+	SceneNode* phongObj = new SceneNode("Sphere", SceneNode::BASIC, NULL);
 	node_list.push_back(phongObj);
-	phongObj->model.setTranslation(5.0f, 2.0f, 2.0f);
+	phongObj->model.setTranslation(-1.0f, 3.0f, -1.5f);
 	phongObj->mesh = Mesh::Get("data/meshes/sphere.obj");
 	phongObj->material->texture = Texture::Get("data/textures/normal.png");
 
 	// LIGHT
 	Light* lightNode1 = new Light();
-	model.setTranslation(0.0f, 2.0f, 2.0f);
-	model.scale(0.5f, 0.5f, 0.5f);
+	model.setTranslation(-0.7f, 1.0f, 2.5f);
+	model.scale(0.2f, 0.2f, 0.2f);
 	lightNode1->model = model;
-	lightNode1->Id = vec3(0.f, 0.f, 1.f);
+	lightNode1->Id = vec3(0.f, 1.f, 0.f);
 	light_list.push_back(lightNode1);
 
 	Light* lightNode2 = new Light();
-	model.setTranslation(-6.0f, 1.0f, 5.0f);
-	model.scale(0.5f, 0.5f, 0.5f);
+	model.setTranslation(-4.0f, 4.0f, -2.6f);
+	model.scale(0.2f, 0.2f, 0.2f);
 	lightNode2->model = model;
 	lightNode2->maxDist = 23.0f;
+	lightNode2->Is = vec3(1.f, 0.f, 0.f);
 	light_list.push_back(lightNode2);
 
 	//hide the cursor
@@ -212,7 +214,7 @@ void Application::update(double seconds_elapsed)
 void Application::renderInMenu()
 {
 	bool changed = false;
-	changed |= ImGui::Combo("Sky", (int*)&skyType, "CITY\0SNOW\0DRAGON", 3);
+	changed |= ImGui::Combo("Environment", (int*)&skyType, "CITY\0SNOW\0DRAGON", 3);
 	if (changed && skyType == CITY)
 		setSkyTexture(CITY);
 	else if (changed && skyType == SNOW)

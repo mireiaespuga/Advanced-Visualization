@@ -130,6 +130,7 @@ void StandardMaterial::setTex(eTexType texturetype)
 		texture = Texture::Get("data/textures/color.png");
 		break;
 	default:
+		texture = NULL;
 		break;
 	}
 }
@@ -164,7 +165,7 @@ void StandardMaterial::renderInMenu(bool basic=false)
 	if (basic && ImGui::TreeNode("Basic Textures"))
 	{
 		bool changed = false;
-		changed |= ImGui::Combo("Ex", (int*)&texType, "NORMAL\0ROUGHNESS\0METALNESS\0COLOR", 4);
+		changed |= ImGui::Combo("Ex", (int*)&texType, "NORMAL\0ROUGHNESS\0METALNESS\0COLOR\0NONE", 4);
 		if (changed && texType == NORMAL)
 			setTex(NORMAL);
 		else if (changed && texType == ROUGHNESS)
@@ -173,6 +174,8 @@ void StandardMaterial::renderInMenu(bool basic=false)
 			setTex(METALNESS);
 		else if (changed && texType == COLOR)
 			setTex(COLOR);
+		else if (changed && texType == NONE)
+			setTex(NONE);
 		ImGui::TreePop();
 	}
 

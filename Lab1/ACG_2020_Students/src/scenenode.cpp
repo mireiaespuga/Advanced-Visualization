@@ -40,11 +40,12 @@ SceneNode::SceneNode(const char* name, eNodeType nodeType, Texture* texture)
 		material->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/phong.fs"); 
 		this->material = material;
 		break;
+
 	case BASIC:
 		material->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/phong.fs");
 		this->material = material;
-
 		break;
+
 	default:
 		break;
 	}

@@ -20,7 +20,7 @@ public:
 	float alpha;
 	enum  eMatType { GENERIC, BLACKRUBBER, PEARL, GOLD };
 	char matType;
-	enum  eTexType { NORMAL, ROUGHNESS, METALNESS, COLOR };
+	enum  eTexType { NORMAL, ROUGHNESS, METALNESS, COLOR, NONE };
 	char texType;
 
 
