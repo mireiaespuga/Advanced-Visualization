@@ -12,8 +12,7 @@ Light::Light()
 	this->name = std::string("Light" + std::to_string(lightID++));
 	this->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/flat.fs");
 	this->mesh = Mesh::Get("data/meshes/sphere.obj");
-	this->model.scale(0.2f, 0.2f, 0.2f);
-	this->maxDist = 10.0f;
+	this->maxDist = 8.0f;
 }
 
 Light::~Light()
