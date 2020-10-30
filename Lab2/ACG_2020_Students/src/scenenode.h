@@ -11,7 +11,7 @@ class SceneNode {
 public:
 
 	static unsigned int lastNameId;
-	enum eNodeType { REFLECT, CUBEMAP, OBJECT };
+	enum eNodeType { REFLECT, CUBEMAP, OBJECT, BASIC };
 	eNodeType nodeType;
 
 	SceneNode();
@@ -20,6 +20,7 @@ public:
 
 	Material * material = NULL;
 	std::string name;
+	Texture* texture = NULL;
 
 	Mesh* mesh = NULL;
 	Matrix44 model;

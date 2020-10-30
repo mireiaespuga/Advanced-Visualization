@@ -8,6 +8,7 @@ varying vec4 v_color;
 uniform vec4 u_color;
 uniform sampler2D u_texture;
 uniform vec3 u_light_position;
+uniform float u_light_maxdist;
 uniform vec3 Id;
 uniform vec3 Ia;
 uniform vec3 Is;
@@ -31,7 +32,10 @@ void main()
 		float light_distance = length(L);
 
 		//compute a linear attenuation factor
-		float att_factor = 1.0 / light_distance;
+		//float att_factor = 1.0 / light_distance;
+		float att_factor = u_light_maxdist - light_distance;
+		att_factor /= u_light_maxdist;
+		att_factor = max(att_factor, 0.0);
 
 		//we ignore the light distance for now
 		L = normalize(L);

@@ -51,11 +51,13 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	// Create a skyBox
 	SceneNode* node = new SceneNode("Scene node", SceneNode::CUBEMAP, skybox_texture);
 	node_list.push_back(node);
+	node->model.setTranslation(camera->eye.x, camera->eye.y, camera->eye.z);
+	node->model.scale(50.0f, 50.0f, 50.0f);
 
 	// Create node and add it to the scene
 	SceneNode* sphereNode = new SceneNode("Reflect", SceneNode::REFLECT, skybox_texture);
 	node_list.push_back(sphereNode);
-	sphereNode->model.setTranslation(2.0f, 2.0f, 2.0f);
+	sphereNode->model.setTranslation(5.0f, -7.0f, 6.0f);
 	sphereNode->model.scale(5.0f, 5.0f, 5.0f);
 	sphereNode->mesh = Mesh::Get("data/models/helmet/helmet.obj");
 
@@ -68,29 +70,34 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	bench->material->texture = Texture::Get("data/models/bench/albedo.png");
 
 	// Create node and add it to the scene
-	SceneNode* helmet = new SceneNode("Helmet", SceneNode::OBJECT, NULL);
-	node_list.push_back(helmet);
-	helmet->model.setTranslation(0.0f, -2.0f, 0.0f);
-	helmet->mesh = Mesh::Get("data/models/helmet/helmet.obj");
-	helmet->material->texture = Texture::Get("data/models/helmet/albedo.png");
-
-	// Create node and add it to the scene
-	SceneNode* lantern = new SceneNode("Lantern", SceneNode::eNodeType::OBJECT, NULL);
+	SceneNode* lantern = new SceneNode("Lantern", SceneNode::OBJECT, NULL);
 	node_list.push_back(lantern);
-	lantern->model.setTranslation(-5.0f, -5.0f, -5.0f);
+	lantern->model.setTranslation(-8.0f, -5.0f, -5.0f);
 	lantern->model.scale(0.05f, 0.05f, 0.05f);
 	lantern->mesh = Mesh::Get("data/models/lantern/lantern.obj");
 	lantern->material->texture = Texture::Get("data/models/lantern/albedo.png");
 
+	// Create node and add it to the scene
+	SceneNode* phongObj = new SceneNode("Sphere", SceneNode::BASIC, NULL);
+	node_list.push_back(phongObj);
+	phongObj->model.setTranslation(-1.0f, 3.0f, -1.5f);
+	phongObj->mesh = Mesh::Get("data/meshes/sphere.obj");
+	phongObj->material->texture = Texture::Get("data/textures/normal.png");
+
 	// LIGHT
 	Light* lightNode1 = new Light();
-	model.setTranslation(0.0f, 2.0f, 2.0f);
+	model.setTranslation(-0.7f, 1.0f, 2.5f);
 	model.scale(0.2f, 0.2f, 0.2f);
 	lightNode1->model = model;
-	lightNode1->Id = vec3(0.f, 0.f, 1.f);
+	lightNode1->Id = vec3(0.f, 1.f, 0.f);
 	light_list.push_back(lightNode1);
 
 	Light* lightNode2 = new Light();
+	model.setTranslation(-4.0f, 4.0f, -2.6f);
+	model.scale(0.2f, 0.2f, 0.2f);
+	lightNode2->model = model;
+	lightNode2->maxDist = 23.0f;
+	lightNode2->Is = vec3(1.f, 0.f, 0.f);
 	light_list.push_back(lightNode2);
 
 	//hide the cursor
@@ -207,7 +214,7 @@ void Application::update(double seconds_elapsed)
 void Application::renderInMenu()
 {
 	bool changed = false;
-	changed |= ImGui::Combo("Sky", (int*)&skyType, "CITY\0SNOW\0DRAGON", 3);
+	changed |= ImGui::Combo("Environment", (int*)&skyType, "CITY\0SNOW\0DRAGON", 3);
 	if (changed && skyType == CITY)
 		setSkyTexture(CITY);
 	else if (changed && skyType == SNOW)

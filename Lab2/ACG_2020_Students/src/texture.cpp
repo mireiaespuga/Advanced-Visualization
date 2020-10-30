@@ -121,6 +121,7 @@ void Texture::create(unsigned int width, unsigned int height, unsigned int forma
 		upload(format, type, mipmaps, data, internal_format);
 }
 
+
 void Texture::createCubemap(unsigned int width, unsigned int height, Uint8** data, unsigned int format, unsigned int type, bool mipmaps, unsigned int internal_format)
 {
 	assert(width && height && "texture must have a size");

@@ -12,7 +12,7 @@ Light::Light()
 	this->name = std::string("Light" + std::to_string(lightID++));
 	this->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/flat.fs");
 	this->mesh = Mesh::Get("data/meshes/sphere.obj");
-	this->model.scale(0.2f, 0.2f, 0.2f);
+	this->maxDist = 8.0f;
 }
 
 Light::~Light()
@@ -61,6 +61,8 @@ void Light::renderInMenu()
 	ImGuizmo::DecomposeMatrixToComponents(model.m, matrixTranslation, matrixRotation, matrixScale);
 	ImGui::DragFloat3("Position", matrixTranslation, 0.1f);
 	ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, model.m);
+
+	ImGui::SliderFloat("Max Distance", &maxDist, 1.0f, 100.0f);
 
 	ImGui::ColorEdit3("Diffuse", (float*)&Id); // Edit 3 floats representing a color
 	ImGui::ColorEdit3("Ambient", (float*)&Ia); // Edit 3 floats representing a color

@@ -52,6 +52,7 @@ public:
 	void fromTexture(Texture* texture);
 	void fromScreen(int width, int height);
 
+	
 	bool loadTGA(const char* filename);
 	bool loadPNG(const char* filename, bool flip_y = true);
 	bool saveTGA(const char* filename, bool flip_y = true);
@@ -86,7 +87,6 @@ public:
 	unsigned int wrapS;
 	unsigned int wrapT;
 	unsigned int wrapR; //depth wrap, unused and undefined in 2D and cubemap textures
-
 	//original data info
 	Image image;
 
