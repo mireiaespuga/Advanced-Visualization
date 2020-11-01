@@ -26,14 +26,16 @@ void StandardMaterial::setUniforms(Camera* camera, Matrix44 model, Light* light 
 	if (light) {
 		shader->setUniform("u_light_position", light->model.getTranslation());
 		shader->setUniform("u_light_maxdist", light->maxDist);
-		shader->setUniform("Id", light->Id);
-		shader->setUniform("Ia", light->Ia);
-		shader->setUniform("Is", light->Is);
-		shader->setUniform("Ka", Ka);
+		shader->setUniform("u_light_color", light->Id);
+		shader->setUniform("metalness", metalness);
+		shader->setUniform("roughness", roughness);
+		//shader->setUniform("Ia", light->Ia);
+		//shader->setUniform("Is", light->Is);
+	/*	shader->setUniform("Ka", Ka);
 		shader->setUniform("Kd", Kd);
 		shader->setUniform("Ks", Ks);
-		shader->setUniform("alpha", alpha);
-		shader->setUniform("u_has_light", 1.0);
+		shader->setUniform("alpha", alpha);*/
+		//shader->setUniform("u_has_light", 1.0);
 	}
 	else {
 		shader->setUniform("u_has_light", 0.0);
@@ -41,10 +43,21 @@ void StandardMaterial::setUniforms(Camera* camera, Matrix44 model, Light* light 
 	
 	if (texture) {
 		shader->setUniform("u_texture", texture);
+		
 		shader->setUniform("u_has_texture", 1.0);
 	} 
 	else {
 		shader->setUniform("u_has_texture", 0.0);
+	}
+
+	if (texture_environment) {
+		shader->setUniform("u_texture_environment", texture_environment);
+		shader->setUniform("u_texture_prem_0", texture_environment);
+		shader->setUniform("u_texture_prem_1", texture_environment_1);
+		shader->setUniform("u_texture_prem_2", texture_environment_2);
+		shader->setUniform("u_texture_prem_3", texture_environment_3);
+		shader->setUniform("u_texture_prem_4", texture_environment_4);
+
 	}
 }
 
@@ -81,6 +94,8 @@ void StandardMaterial::setMaterial(eMatType material)
 		Kd = vec3(1.0f, 1.0f, 1.0f);
 		Ks = vec3(1.0f, 1.0f, 1.0f);
 		alpha = 30.0;
+		metalness = 0.5;
+		roughness = 0.5;
 		break;
 
 	case BLACKRUBBER:
@@ -89,6 +104,8 @@ void StandardMaterial::setMaterial(eMatType material)
 		Kd = vec3(0.01f, 0.01f, 0.01f);
 		Ks = vec3(0.4f, 0.4f, 0.4f); 
 		alpha = 0.078125*128;
+		metalness = 0.5;
+		roughness = 0.5;
 		break;
 
 	case PEARL: 
@@ -97,6 +114,8 @@ void StandardMaterial::setMaterial(eMatType material)
 		Kd = vec3(1.0f, 0.829f, 0.829f);
 		Ks = vec3(0.296648f, 0.296648f, 0.296648f);
 		alpha = 0.088 * 128;
+		metalness = 0.5;
+		roughness = 0.5;
 		break;
 
 	case GOLD:
@@ -104,11 +123,14 @@ void StandardMaterial::setMaterial(eMatType material)
 		Kd = vec3(0.75164f, 0.60648f, 0.22648f);
 		Ks = vec3(0.628281f, 0.555802f, 0.366065f);
 		alpha = 51.2f;
+		metalness = 0.5;
+		roughness = 0.5;
 		break;
 	default:
 		break;
 	}
 }
+
 void StandardMaterial::setTex(eTexType texturetype)
 {
 	texType = texturetype;
@@ -135,6 +157,15 @@ void StandardMaterial::setTex(eTexType texturetype)
 	}
 }
 
+void StandardMaterial::setTextureHDRE(HDRE* hdre)
+{
+	texture_environment->cubemapFromHDRE(hdre, 0);
+	texture_environment_1->cubemapFromHDRE(hdre, 1);
+	texture_environment_2->cubemapFromHDRE(hdre, 2);
+	texture_environment_3->cubemapFromHDRE(hdre, 3);
+	texture_environment_4->cubemapFromHDRE(hdre, 4);
+}
+
 void StandardMaterial::renderInMenu(bool basic=false)
 {
 	//Material
@@ -142,10 +173,11 @@ void StandardMaterial::renderInMenu(bool basic=false)
 	{
 		ImGui::ColorEdit3("Color", (float*)&color); // Edit 3 floats representing a color
 
-		ImGui::SliderFloat3("Ka", (float*)&Ka, 0.0f, 1.0f);
-		ImGui::SliderFloat3("Ks", (float*)&Ks, 0.0f, 1.0f);
-		ImGui::SliderFloat3("Kd", (float*)&Kd, 0.0f, 1.0f);
-		ImGui::SliderFloat("Shine", &alpha, 0.07f, 100.0f);
+		ImGui::SliderFloat("Metalness", &metalness, 0.0f, 1.0f);
+		ImGui::SliderFloat("Roughness", &roughness, 0.0f, 1.0f);
+		//ImGui::SliderFloat3("Ka", (float*)&Ka, 0.0f, 1.0f);
+		//ImGui::SliderFloat3("Kd", (float*)&Kd, 0.0f, 1.0f);
+		//ImGui::SliderFloat("Shine", &alpha, 0.07f, 100.0f);
 		ImGui::TreePop();
 	}
 	if (ImGui::TreeNode("Examples"))
@@ -213,4 +245,13 @@ void WireframeMaterial::render(Mesh* mesh, Matrix44 model, Camera * camera)
 
 void Material::setTex(eTexType texturetype)
 {
+}
+
+void Material::setTextureHDRE(HDRE* hdre)
+{
+	texture_environment->cubemapFromHDRE(hdre, 0);
+	texture_environment_1->cubemapFromHDRE(hdre, 1);
+	texture_environment_2->cubemapFromHDRE(hdre, 2);
+	texture_environment_3->cubemapFromHDRE(hdre, 3);
+	texture_environment_4->cubemapFromHDRE(hdre, 4);
 }

@@ -2,6 +2,7 @@
 #include "application.h"
 #include "texture.h"
 #include "utils.h"
+#include "extra/hdre.h"
 
 unsigned int SceneNode::lastNameId = 0;
 
@@ -37,12 +38,13 @@ SceneNode::SceneNode(const char* name, eNodeType nodeType, Texture* texture)
 		break;
 
 	case OBJECT: 
-		material->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/phong.fs"); 
+		material->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/PBR+IBL.fs"); 
+		material->texture_environment = texture;
 		this->material = material;
 		break;
 
 	case BASIC:
-		material->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/phong.fs");
+		material->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/PBR.fs");
 		this->material = material;
 		break;
 

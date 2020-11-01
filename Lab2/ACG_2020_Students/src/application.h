@@ -20,6 +20,7 @@ public:
 	std::vector< SceneNode* > node_list;
 	std::vector< Light* > light_list;
 	Texture* skybox_texture = new Texture();
+	HDRE* skybox_hdre = new HDRE();
 	enum eSkyTexture { CITY, SNOW, DRAGON, NONE };
 	char skyType;
 
