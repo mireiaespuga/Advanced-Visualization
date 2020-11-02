@@ -13,11 +13,13 @@ public:
 
 	Shader* shader = NULL;
 	Texture* texture = NULL;
-	Texture* texture_environment = new Texture();
+	Texture* texture_LUT = Texture::Get("data/textures/brdfLUT.png");;
+	Texture* texture_environment_0 = new Texture();
 	Texture* texture_environment_1 = new Texture();
 	Texture* texture_environment_2 = new Texture();
 	Texture* texture_environment_3 = new Texture();
 	Texture* texture_environment_4 = new Texture();
+	Texture* texture_environment_5 = new Texture();
 	vec4 color;
 	vec3 Ka;
 	vec3 Ks;

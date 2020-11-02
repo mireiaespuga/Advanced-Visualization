@@ -63,14 +63,23 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	//sphereNode->mesh = Mesh::Get("data/models/helmet/helmet.obj");
 
 	// Create node and add it to the scene
-	SceneNode* bench = new SceneNode("Bench", SceneNode::OBJECT, skybox_texture);
-	node_list.push_back(bench);
-	bench->model.setTranslation(-2.0f, -2.0f, -2.0f);
-	bench->model.scale(5.0f, 5.0f, 5.0f);
-	bench->mesh = Mesh::Get("data/models/bench/bench.obj");
-	bench->material->texture = Texture::Get("data/models/bench/albedo.png");
-	bench->material->texture_environment = skybox_texture;
-	bench->material->setTextureHDRE(skybox_hdre);
+	SceneNode* helmet = new SceneNode("Helmet", SceneNode::OBJECT, skybox_texture);
+	node_list.push_back(helmet);
+	helmet->model.setTranslation(-2.0f, -2.0f, -2.0f);
+	helmet->model.scale(2.0f, 2.0f, 2.0f);
+	helmet->mesh = Mesh::Get("data/models/helmet/helmet.obj");
+	helmet->material->texture = Texture::Get("data/models/helmet/albedo.png");
+	helmet->material->setTextureHDRE(skybox_hdre);
+
+	//// Create node and add it to the scene
+	//SceneNode* bench = new SceneNode("Bench", SceneNode::OBJECT, skybox_texture);
+	//node_list.push_back(bench);
+	//bench->model.setTranslation(3.0f, -2.0f, -2.0f);
+	//bench->model.scale(5.0f, 5.0f, 5.0f);
+	//bench->mesh = Mesh::Get("data/models/bench/bench.obj");
+	//bench->material->texture = Texture::Get("data/models/bench/albedo.png");
+	//bench->material->texture_environment = skybox_texture;
+	//bench->material->setTextureHDRE(skybox_hdre);
 
 	//// Create node and add it to the scene
 	//SceneNode* lantern = new SceneNode("Lantern", SceneNode::OBJECT, NULL);
@@ -80,12 +89,12 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	//lantern->mesh = Mesh::Get("data/models/lantern/lantern.obj");
 	//lantern->material->texture = Texture::Get("data/models/lantern/albedo.png");
 
-	// Create node and add it to the scene
-	//SceneNode* phongObj = new SceneNode("Sphere", SceneNode::BASIC, NULL);
-	//node_list.push_back(phongObj);
-	//phongObj->model.setTranslation(-1.0f, 3.0f, -1.5f);
-	//phongObj->mesh = Mesh::Get("data/meshes/sphere.obj");
-	//phongObj->material->texture = Texture::Get("data/textures/normal.png");
+	//Create node and add it to the scene
+	SceneNode* sphere = new SceneNode("Sphere", SceneNode::OBJECT, NULL);
+	node_list.push_back(sphere);
+	sphere->model.setTranslation(3.0f, -2.0f, 0.0f);
+	sphere->mesh = Mesh::Get("data/meshes/sphere.obj");
+	sphere->material->setTextureHDRE(skybox_hdre);
 
 	// LIGHT
 	//Light* lightNode1 = new Light();
@@ -96,7 +105,7 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	//light_list.push_back(lightNode1);
 
 	Light* lightNode2 = new Light();
-	model.setTranslation(-2.0f, 2.0f, 3.0f);
+	model.setTranslation(1.5f, 2.0f, 3.0f);
 	model.scale(0.2f, 0.2f, 0.2f);
 	lightNode2->model = model;
 	lightNode2->maxDist = 23.0f;

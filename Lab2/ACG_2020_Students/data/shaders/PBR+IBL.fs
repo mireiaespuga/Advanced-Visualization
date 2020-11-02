@@ -8,6 +8,7 @@ varying vec4 v_color;
 uniform vec3 u_camera_position;
 uniform vec4 u_color;
 uniform sampler2D u_texture;
+uniform sampler2D u_texture_brdfLUT;
 uniform vec3 u_light_position;
 uniform vec3 u_light_color;
 uniform float metalness;
@@ -18,11 +19,13 @@ uniform samplerCube u_texture_environment;
 // Levels of the HDR Environment to simulate roughness material
 // (IBL)
 //uniform samplerCube u_texture_prem_0;
+
 uniform samplerCube u_texture_prem_0;
 uniform samplerCube u_texture_prem_1;
 uniform samplerCube u_texture_prem_2;
 uniform samplerCube u_texture_prem_3;
 uniform samplerCube u_texture_prem_4;
+uniform samplerCube u_texture_prem_5;
 
 #define PI 3.14159265359
 #define RECIPROCAL_PI 0.3183098861837697
@@ -34,7 +37,7 @@ float NDF (	const in float NoH, const in float alpha )
 {
 	float a2 = alpha * alpha;
 	float f = (NoH * NoH) * (a2 - 1.0) + 1.0;
-	return a2 / (PI * f * f);
+	return a2 / clamp(PI * f * f, 0.01, 0.99);
 }
 
 // Fresnel term --F
@@ -70,7 +73,7 @@ vec3 specularDFG( float roughness, vec3 f0, float NoH, float NoV, float NoL, flo
 		
 	// Norm factor
 	vec3 spec = D * G * F;
-	spec /= (4.0 * NoL * NoV);
+	spec /= clamp(4.0 * NoL * NoV, 0.01, 0.99);
 
 	return spec;
 }
@@ -82,12 +85,12 @@ vec3 getReflectionColor(vec3 R, float roughness)
 
 	vec4 color;
 
-	if(lod < 1.0) color = mix( textureCube(u_texture_environment, R), textureCube(u_texture_prem_0, R), lod );
-	else if(lod < 2.0) color = mix( textureCube(u_texture_prem_0, R), textureCube(u_texture_prem_1, R), lod - 1.0 );
-	else if(lod < 3.0) color = mix( textureCube(u_texture_prem_1, R), textureCube(u_texture_prem_2, R), lod - 2.0 );
-	else if(lod < 4.0) color = mix( textureCube(u_texture_prem_2, R), textureCube(u_texture_prem_3, R), lod - 3.0 );
-	else if(lod < 5.0) color = mix( textureCube(u_texture_prem_3, R), textureCube(u_texture_prem_4, R), lod - 4.0 );
-	else color = textureCube(u_texture_prem_4, R);
+	if(lod < 1.0) color = mix( textureCube(u_texture_prem_0, R), textureCube(u_texture_prem_1, R), lod );
+	else if(lod < 2.0) color = mix( textureCube(u_texture_prem_1, R), textureCube(u_texture_prem_2, R), lod - 1.0 );
+	else if(lod < 3.0) color = mix( textureCube(u_texture_prem_2, R), textureCube(u_texture_prem_3, R), lod - 2.0 );
+	else if(lod < 4.0) color = mix( textureCube(u_texture_prem_3, R), textureCube(u_texture_prem_4, R), lod - 3.0 );
+	else if(lod < 5.0) color = mix( textureCube(u_texture_prem_4, R), textureCube(u_texture_prem_5, R), lod - 4.0 );
+	else color = textureCube(u_texture_prem_5, R);
 
 	// Gamma correction
 	color = pow(color, vec4(INV_GAMMA));
@@ -99,15 +102,15 @@ vec3 getReflectionColor(vec3 R, float roughness)
 void main()
 {	
 	vec4 color;
+	vec2 uv = v_uv;
 	if (u_has_texture == 1.0) {
-		vec2 uv = v_uv;
+		
 		color = u_color * texture2D( u_texture, uv );
 	} else {
 		color = u_color;
 	}
 
 	//vector towards the eye (V)
-	//vec3 V = normalize( v_world_position - u_camera_position );
 	vec3 V = normalize( u_camera_position - v_world_position );
 
 	//vector from the point to the light (L)
@@ -121,14 +124,19 @@ void main()
 
 	//compute 
 	float NoL = dot(N,L);
+	NoL = clamp( NoL, 0.01, 0.99);
 
 	float NoV = dot(N,V);
+	NoV = clamp( NoV, 0.01, 0.99);
 
 	float NoH = dot(N,H);
+	NoH = clamp( NoH, 0.01, 0.99);
 
 	float LoH = dot(L,H);
+	LoH = clamp( LoH, 0.01, 0.99);
 
-	vec3 R = reflect( V, N );
+	vec3 R = reflect( -V, N );
+	R = normalize(R);
 
 	//compute refletion
 	//vec3 R = reflect(-L,N);
@@ -138,7 +146,7 @@ void main()
 	//RoV = clamp( RoV, 0.0, 1.0);
 
 	//specular F0 (conductors -> base color, dielectrics -> vec3(0.04))
-	vec3 f0 = (1.0 - metalness) * vec3(0.4) + metalness * color.xyz;
+	vec3 f0 = (1.0 - metalness) * vec3(0.04) + metalness * color.xyz;
 
 	//compute the specular
 	vec3 FSpecular = specularDFG(  roughness, f0, NoH, NoV, NoL, LoH);
@@ -154,17 +162,21 @@ void main()
 
 	//diffuse IBL
 	vec3 diffuseSample = getReflectionColor ( R, roughness );
-	vec3 diffuseIBL = diffuseSample * FDiffuse;
+	vec3 diffuseIBL = diffuseSample * diffuseColor;
 
 	//specular IBL
 	vec3 specularSample = getReflectionColor( R, roughness );
-	vec3 specularIBL = specularSample * FSpecular;
+	vec4 brdfLUT = texture2D( u_texture_brdfLUT, vec2(roughness, NoV));
+	vec3 SpecularBRDF = f0 * brdfLUT.x + brdfLUT.y;
+	vec3 specularIBL = specularSample * SpecularBRDF;
+	//vec3 specularIBL = specularSample * FSpecular;
 
 	//diffuse and specular terms from IBL
 	vec3 IBL = diffuseIBL + specularIBL;
 
+	vec3 light_params = u_light_color;
 	//modulate light 
-	vec3 light = (direct + IBL) * u_light_color;
+	vec3 light = (direct + IBL) * NoL * light_params;
 
 	//apply to final pixel color
 	color.xyz = light;
