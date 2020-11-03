@@ -10,8 +10,8 @@ uniform vec4 u_color;
 uniform sampler2D u_texture;
 uniform vec3 u_light_position;
 uniform vec3 u_light_color;
-uniform float metalness;
-uniform float roughness;
+uniform float u_metalness;
+uniform float u_roughness;
 uniform float u_has_texture;
 
 #define RECIPROCAL_PI 0.3183098861837697
@@ -38,17 +38,17 @@ float GGX(float NdotV, float k){
 	return NdotV / (NdotV * (1.0 - k) + k);
 }
 	
-float G_Smith( float NdotV, float NdotL, float roughness) // -- G continuation
+float G_Smith( float NdotV, float NdotL, float u_roughness) // -- G continuation
 {
-	float k = pow(roughness + 1.0, 2.0) / 8.0;
+	float k = pow(u_roughness + 1.0, 2.0) / 8.0;
 	return GGX(NdotL, k) * GGX(NdotV, k);
 }
 
 
 //this is the cook torrance specular reflection model
-vec3 specularBRDF( float roughness, vec3 f0, float NoH, float NoV, float NoL, float LoH )
+vec3 specularBRDF( float u_roughness, vec3 f0, float NoH, float NoV, float NoL, float LoH )
 {
-	float alpha = roughness * roughness;
+	float alpha = u_roughness * u_roughness;
 	// Normal Distribution Function
 	float D = D_GGX( NoH, alpha );
 
@@ -56,7 +56,7 @@ vec3 specularBRDF( float roughness, vec3 f0, float NoH, float NoV, float NoL, fl
 	vec3 F = F_Schlick( LoH, f0 );
 
 	// Visibility Function (shadowing/masking)
-	float G = G_Smith( NoV, NoL, roughness );
+	float G = G_Smith( NoV, NoL, u_roughness );
 		
 	// Norm factor
 	vec3 spec = D * G * F;
@@ -88,14 +88,18 @@ void main()
 	//here we store the H vector V + L
 	vec3 H = normalize( V + L );
 
-	//compute how much is aligned
+	//compute 
 	float NoL = dot(N,L);
+	NoL = clamp( NoL, 0.01, 0.99);
 
 	float NoV = dot(N,V);
+	NoV = clamp( NoV, 0.01, 0.99);
 
 	float NoH = dot(N,H);
+	NoH = clamp( NoH, 0.01, 0.99);
 
 	float LoH = dot(L,H);
+	LoH = clamp( LoH, 0.01, 0.99);
 
 	//compute refletion
 	//vec3 R = reflect(-L,N);
@@ -105,13 +109,13 @@ void main()
 	//RoV = clamp( RoV, 0.0, 1.0);
 
 	//we compute the reflection in base to the color and the metalness
-	vec3 f0 = (1.0 - metalness) * vec3(0.4) + metalness * color.xyz;
+	vec3 f0 = (1.0 - u_metalness) * vec3(0.4) + u_metalness * color.xyz;
 
 	//metallic materials do not have diffuse
-	vec3 diffuseColor = (1.0 - metalness) * color.xyz;
+	vec3 diffuseColor = (1.0 - u_metalness) * color.xyz;
 
 	//compute the specular
-	vec3 FSpecular = specularBRDF(  roughness, f0, NoH, NoV, NoL, LoH);
+	vec3 FSpecular = specularBRDF(  u_roughness, f0, NoH, NoV, NoL, LoH);
 
 	// Here we use the Burley, but you can replace it by the Lambert.
 	vec3 FDiffuse = diffuseColor / PI;

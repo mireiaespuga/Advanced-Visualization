@@ -45,7 +45,6 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	camera->setPerspective(45.f,window_width/(float)window_height,0.1f,10000.f); //set the projection, we want to be perspective
 
 	Matrix44 model;
-	setSkyTexture(Application::SNOW);
 
 	// NODES
 	// Create a skyBox
@@ -69,7 +68,23 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	helmet->model.scale(2.0f, 2.0f, 2.0f);
 	helmet->mesh = Mesh::Get("data/models/helmet/helmet.obj");
 	helmet->material->texture = Texture::Get("data/models/helmet/albedo.png");
-	helmet->material->setTextureHDRE(skybox_hdre);
+	helmet->material->metalness_texture = Texture::Get("data/models/helmet/metalness.png");
+	helmet->material->roughness_texture = Texture::Get("data/models/helmet/roughness.png");
+	helmet->material->normal_texture = Texture::Get("data/models/helmet/normal.png");
+	helmet->material->emissive_texture = Texture::Get("data/models/helmet/emissive.png");
+
+
+	//// Create node and add it to the scene
+	//SceneNode* lantern = new SceneNode("lantern", SceneNode::OBJECT, skybox_texture);
+	//node_list.push_back(lantern);
+	//lantern->model.setTranslation(-2.0f, -2.0f, -2.0f);
+	//lantern->model.scale(0.05f, 0.05f, 0.05f);
+	//lantern->mesh = Mesh::Get("data/models/lantern/lantern.obj");
+	//lantern->material->texture = Texture::Get("data/models/lantern/albedo.png");
+	//lantern->material->metalness_texture = Texture::Get("data/models/lantern/metalness.png");
+	//lantern->material->roughness_texture = Texture::Get("data/models/lantern/roughness.png");
+	//lantern->material->normal_texture = Texture::Get("data/models/lantern/normal.png");
+	////lantern->material->emissive_texture = Texture::Get("data/models/lantern/emissive.png");
 
 	//// Create node and add it to the scene
 	//SceneNode* bench = new SceneNode("Bench", SceneNode::OBJECT, skybox_texture);
@@ -94,7 +109,6 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	node_list.push_back(sphere);
 	sphere->model.setTranslation(3.0f, -2.0f, 0.0f);
 	sphere->mesh = Mesh::Get("data/meshes/sphere.obj");
-	sphere->material->setTextureHDRE(skybox_hdre);
 
 	// LIGHT
 	//Light* lightNode1 = new Light();
@@ -112,6 +126,7 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	lightNode2->Is = vec3(1.f, 0.f, 0.f);
 	light_list.push_back(lightNode2);
 
+	setSkyTexture(Application::PANORAMA);
 	//hide the cursor
 	SDL_ShowCursor(!mouse_locked); //hide or show the mouse
 }
@@ -226,13 +241,20 @@ void Application::update(double seconds_elapsed)
 void Application::renderInMenu()
 {
 	bool changed = false;
-	changed |= ImGui::Combo("Environment", (int*)&skyType, "CITY\0SNOW\0DRAGON", 3);
-	if (changed && skyType == CITY)
-		setSkyTexture(CITY);
-	else if (changed && skyType == SNOW)
-		setSkyTexture(SNOW);
-	else if (changed && skyType == DRAGON)
-		setSkyTexture(DRAGON);
+	//changed |= ImGui::Combo("Environment", (int*)&skyType, "CITY\0SNOW\0DRAGON\0PANORAMA\0STUDIO\0TV_STUDIO", 6);
+	changed |= ImGui::Combo("Environment", (int*)&skyType, "PANORAMA\0STUDIO\0TV_STUDIO", 3);
+	//if (changed && skyType == CITY)
+	//	setSkyTexture(CITY);
+	//else if (changed && skyType == SNOW)
+	//	setSkyTexture(SNOW);
+	//else if (changed && skyType == DRAGON)
+	//	setSkyTexture(DRAGON);
+	if (changed && skyType == PANORAMA)
+		setSkyTexture(PANORAMA);
+	else if (changed && skyType == STUDIO)
+		setSkyTexture(STUDIO);
+	else if (changed && skyType == TV_STUDIO)
+		setSkyTexture(TV_STUDIO);
 }
 
 void Application::setSkyTexture(eSkyTexture skyTexture)
@@ -247,7 +269,7 @@ void Application::setSkyTexture(eSkyTexture skyTexture)
 		break;
 
 	case SNOW:
-		skybox_hdre = HDRE::Get("data/environments/panorama.hdre");
+		skybox_hdre = HDRE::Get("data/environments/studio.hdre");
 		skybox_texture->cubemapFromHDRE(skybox_hdre, LEVEL);
 		break;
 
@@ -255,14 +277,27 @@ void Application::setSkyTexture(eSkyTexture skyTexture)
 		skybox_texture->cubemapFromImages("data/environments/dragonvale");
 		break;
 
-	// TODO
-	/*case PANORAMA:
+	case PANORAMA:
+		skybox_hdre = HDRE::Get("data/environments/panorama.hdre");
+		skybox_texture->cubemapFromHDRE(skybox_hdre, LEVEL);
+		break;
+
 	case STUDIO:
-	case TV_STUDIO:*/
+		skybox_hdre = HDRE::Get("data/environments/studio.hdre");
+		skybox_texture->cubemapFromHDRE(skybox_hdre, LEVEL);
+		break;
+
+	case TV_STUDIO:
+		skybox_hdre = HDRE::Get("data/environments/tv_studio.hdre");
+		skybox_texture->cubemapFromHDRE(skybox_hdre, LEVEL);
+		break;
 
 	default:
 		break;
 	}
+	for (int j = 0; j < node_list.size(); j++) {
+		node_list[j]->material->setTextureHDRE(skybox_hdre);
+	}	
 }
 
 //Keyboard event handler (sync input)

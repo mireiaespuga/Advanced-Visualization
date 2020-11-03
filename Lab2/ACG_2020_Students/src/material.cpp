@@ -27,8 +27,9 @@ void StandardMaterial::setUniforms(Camera* camera, Matrix44 model, Light* light 
 		shader->setUniform("u_light_position", light->model.getTranslation());
 		shader->setUniform("u_light_maxdist", light->maxDist);
 		shader->setUniform("u_light_color", light->Id);
-		shader->setUniform("metalness", metalness);
-		shader->setUniform("roughness", roughness);
+		shader->setUniform("u_light_intensity", light->intensity);
+		shader->setUniform("u_metalness", metalness);
+		shader->setUniform("u_roughness", roughness);
 		//shader->setUniform("Ia", light->Ia);
 		//shader->setUniform("Is", light->Is);
 	/*	shader->setUniform("Ka", Ka);
@@ -40,25 +41,71 @@ void StandardMaterial::setUniforms(Camera* camera, Matrix44 model, Light* light 
 	else {
 		shader->setUniform("u_has_light", 0.0);
 	}
-	
-	if (texture) {
-		shader->setUniform("u_texture", texture);
-		shader->setUniform("u_texture_brdfLUT", texture_LUT);
-		shader->setUniform("u_has_texture", 1.0);
-	} 
-	else {
-		shader->setUniform("u_has_texture", 0.0);
-	}
+
+	int texture_id = 0;
 
 	if (texture_environment_0) {
-		shader->setUniform("u_texture_prem_0", texture_environment_0);
-		shader->setUniform("u_texture_prem_1", texture_environment_1);
-		shader->setUniform("u_texture_prem_2", texture_environment_3);
-		shader->setUniform("u_texture_prem_3", texture_environment_3);
-		shader->setUniform("u_texture_prem_4", texture_environment_4);
-		shader->setUniform("u_texture_prem_5", texture_environment_5);
-
+		shader->setUniform("u_texture_prem_0", texture_environment_0, 0);
+			texture_id++;
 	}
+
+	if (texture && has_texture) {
+		shader->setUniform("u_texture", texture, 1);
+		texture_id++;
+		shader->setUniform("u_has_texture", 1.0);
+	} else shader->setUniform("u_has_texture", 0.0);
+
+	if (metalness_texture && has_metalness_texture) {
+		shader->setUniform("u_metalness_texture", metalness_texture, 2);
+		texture_id++;
+		shader->setUniform("u_has_metalness_texture", 1.0);
+	}
+	else shader->setUniform("u_has_metalness_texture", 0.0);
+
+	if (roughness_texture && has_roughness_texture) {
+		shader->setUniform("u_roughness_texture", roughness_texture, 3);
+		texture_id++;
+		shader->setUniform("u_has_roughness_texture", 1.0);
+	}
+	else shader->setUniform("u_has_roughness_texture", 0.0);
+
+	if (normal_texture && has_normal_texture) {
+		shader->setUniform("u_normal_texture", normal_texture, 4);
+		texture_id++;
+		shader->setUniform("u_has_normal_texture", 1.0);
+	}
+	else shader->setUniform("u_has_normal_texture", 0.0);
+
+	if (emissive_texture && has_emissive_texture) {
+		shader->setUniform("u_emissive_texture", emissive_texture, 5);
+		texture_id++;
+		shader->setUniform("u_has_emissive_texture", 1.0);
+	}
+	else shader->setUniform("u_has_emissive_texture", 0.0);
+
+	shader->setUniform("u_texture_brdfLUT", texture_LUT, 6);
+	texture_id++;
+
+	if (texture_environment_0) {
+		texture_id++;
+		shader->setUniform("u_texture_prem_1", texture_environment_1, 7);
+		texture_id++;
+		shader->setUniform("u_texture_prem_2", texture_environment_2, 8);
+		texture_id++;
+		shader->setUniform("u_texture_prem_3", texture_environment_3, 9);
+		texture_id++;
+		shader->setUniform("u_texture_prem_4", texture_environment_4, 10);
+		texture_id++;
+		shader->setUniform("u_texture_prem_5", texture_environment_5, 11);
+		texture_id++;
+	}
+
+	//if (ao_texture && has_ao_texture) {
+	//	shader->setUniform("u_ao_texture", ao_texture);
+	//	shader->setUniform("u_has_ao_texture", true);
+	//}
+
+
 }
 
 void StandardMaterial::render(Mesh* mesh, Matrix44 model, Camera* camera, Light* light = NULL)
@@ -170,47 +217,64 @@ void StandardMaterial::setTextureHDRE(HDRE* hdre)
 void StandardMaterial::renderInMenu(bool basic=false)
 {
 	//Material
-	if (ImGui::TreeNode("Custom"))
-	{
-		ImGui::ColorEdit3("Color", (float*)&color); // Edit 3 floats representing a color
-
-		ImGui::SliderFloat("Metalness", &metalness, 0.0f, 1.0f);
+	//if (ImGui::TreeNode("Custom")){
+	ImGui::ColorEdit3("Color", (float*)&color); // Edit 3 floats representing a color
+	if (texture) {
+		ImGui::Checkbox("Enable color texture", &has_texture);
+	}
+	if (emissive_texture) {
+		ImGui::Checkbox("Enable emissive texture", &has_emissive_texture);
+	}
+	if (normal_texture) {
+		ImGui::Checkbox("Enable normal texture", &has_normal_texture);
+	}
+	if (roughness_texture) {
+		ImGui::Checkbox("Enable roughness texture", &has_roughness_texture);
+	}
+	if (metalness_texture) {
+		ImGui::Checkbox("Enable metalness texture", &has_metalness_texture);
+	}
+	if (!has_roughness_texture) {
 		ImGui::SliderFloat("Roughness", &roughness, 0.0f, 1.0f);
-		//ImGui::SliderFloat3("Ka", (float*)&Ka, 0.0f, 1.0f);
-		//ImGui::SliderFloat3("Kd", (float*)&Kd, 0.0f, 1.0f);
-		//ImGui::SliderFloat("Shine", &alpha, 0.07f, 100.0f);
-		ImGui::TreePop();
 	}
-	if (ImGui::TreeNode("Examples"))
-	{
-		bool changed = false;
-		changed |= ImGui::Combo("Ex", (int*)&matType, "GENERIC\0BLACKRUBBER\0PEARL\0GOLD", 4);
-		if (changed && matType == GENERIC)
-			setMaterial(GENERIC);
-		else if (changed && matType == PEARL)
-			setMaterial(PEARL);
-		else if (changed && matType == BLACKRUBBER)
-			setMaterial(BLACKRUBBER);
-		else if (changed && matType == GOLD)
-			setMaterial(GOLD);
-		ImGui::TreePop();
+	if (!has_metalness_texture) {
+		ImGui::SliderFloat("Metalness", &metalness, 0.0f, 1.0f);
 	}
-	if (basic && ImGui::TreeNode("Basic Textures"))
-	{
-		bool changed = false;
-		changed |= ImGui::Combo("Ex", (int*)&texType, "NORMAL\0ROUGHNESS\0METALNESS\0COLOR\0NONE", 4);
-		if (changed && texType == NORMAL)
-			setTex(NORMAL);
-		else if (changed && texType == ROUGHNESS)
-			setTex(ROUGHNESS);
-		else if (changed && texType == METALNESS)
-			setTex(METALNESS);
-		else if (changed && texType == COLOR)
-			setTex(COLOR);
-		else if (changed && texType == NONE)
-			setTex(NONE);
-		ImGui::TreePop();
-	}
+	//ImGui::SliderFloat3("Ka", (float*)&Ka, 0.0f, 1.0f);
+	//ImGui::SliderFloat3("Kd", (float*)&Kd, 0.0f, 1.0f);
+	//ImGui::SliderFloat("Shine", &alpha, 0.07f, 100.0f);
+	//ImGui::TreePop();
+	//}
+	//if (ImGui::TreeNode("Examples"))
+	//{
+	//	bool changed = false;
+	//	changed |= ImGui::Combo("Ex", (int*)&matType, "GENERIC\0BLACKRUBBER\0PEARL\0GOLD", 4);
+	//	if (changed && matType == GENERIC)
+	//		setMaterial(GENERIC);
+	//	else if (changed && matType == PEARL)
+	//		setMaterial(PEARL);
+	//	else if (changed && matType == BLACKRUBBER)
+	//		setMaterial(BLACKRUBBER);
+	//	else if (changed && matType == GOLD)
+	//		setMaterial(GOLD);
+	//	ImGui::TreePop();
+	//}
+	//if (basic && ImGui::TreeNode("Basic Textures"))
+	//{
+	//	bool changed = false;
+	//	changed |= ImGui::Combo("Ex", (int*)&texType, "NORMAL\0ROUGHNESS\0METALNESS\0COLOR\0NONE", 4);
+	//	if (changed && texType == NORMAL)
+	//		setTex(NORMAL);
+	//	else if (changed && texType == ROUGHNESS)
+	//		setTex(ROUGHNESS);
+	//	else if (changed && texType == METALNESS)
+	//		setTex(METALNESS);
+	//	else if (changed && texType == COLOR)
+	//		setTex(COLOR);
+	//	else if (changed && texType == NONE)
+	//		setTex(NONE);
+	//	ImGui::TreePop();
+	//}
 
 }
 

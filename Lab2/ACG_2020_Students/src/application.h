@@ -21,7 +21,7 @@ public:
 	std::vector< Light* > light_list;
 	Texture* skybox_texture = new Texture();
 	HDRE* skybox_hdre = new HDRE();
-	enum eSkyTexture { CITY, SNOW, DRAGON, NONE };
+	enum eSkyTexture { PANORAMA, STUDIO, TV_STUDIO, CITY, SNOW, DRAGON };
 	char skyType;
 
 
