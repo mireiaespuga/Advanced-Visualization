@@ -45,7 +45,6 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	camera->setPerspective(45.f,window_width/(float)window_height,0.1f,10000.f); //set the projection, we want to be perspective
 
 	Matrix44 model;
-	setSkyTexture(Application::SNOW);
 
 	// NODES
 	// Create a skyBox
@@ -53,53 +52,81 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	node_list.push_back(node);
 	node->model.setTranslation(camera->eye.x, camera->eye.y, camera->eye.z);
 	node->model.scale(50.0f, 50.0f, 50.0f);
+	//node->material->setTextureHDRE(skybox_hdre);
 
 	// Create node and add it to the scene
-	SceneNode* sphereNode = new SceneNode("Reflect", SceneNode::REFLECT, skybox_texture);
-	node_list.push_back(sphereNode);
-	sphereNode->model.setTranslation(5.0f, -7.0f, 6.0f);
-	sphereNode->model.scale(5.0f, 5.0f, 5.0f);
-	sphereNode->mesh = Mesh::Get("data/models/helmet/helmet.obj");
+	//SceneNode* sphereNode = new SceneNode("Reflect", SceneNode::REFLECT, skybox_texture);
+	//node_list.push_back(sphereNode);
+	//sphereNode->model.setTranslation(5.0f, -7.0f, 6.0f);
+	//sphereNode->model.scale(5.0f, 5.0f, 5.0f);
+	//sphereNode->mesh = Mesh::Get("data/models/helmet/helmet.obj");
 
 	// Create node and add it to the scene
-	SceneNode* bench = new SceneNode("Bench", SceneNode::OBJECT, NULL);
-	node_list.push_back(bench);
-	bench->model.setTranslation(-2.0f, -2.0f, -2.0f);
-	bench->model.scale(5.0f, 5.0f, 5.0f);
-	bench->mesh = Mesh::Get("data/models/bench/bench.obj");
-	bench->material->texture = Texture::Get("data/models/bench/albedo.png");
+	SceneNode* helmet = new SceneNode("Helmet", SceneNode::OBJECT, skybox_texture);
+	node_list.push_back(helmet);
+	helmet->model.setTranslation(-2.0f, -2.0f, -2.0f);
+	helmet->model.scale(2.0f, 2.0f, 2.0f);
+	helmet->mesh = Mesh::Get("data/models/helmet/helmet.obj");
+	helmet->material->texture = Texture::Get("data/models/helmet/albedo.png");
+	helmet->material->metalness_texture = Texture::Get("data/models/helmet/metalness.png");
+	helmet->material->roughness_texture = Texture::Get("data/models/helmet/roughness.png");
+	helmet->material->normal_texture = Texture::Get("data/models/helmet/normal.png");
+	helmet->material->emissive_texture = Texture::Get("data/models/helmet/emissive.png");
 
-	// Create node and add it to the scene
-	SceneNode* lantern = new SceneNode("Lantern", SceneNode::OBJECT, NULL);
-	node_list.push_back(lantern);
-	lantern->model.setTranslation(-8.0f, -5.0f, -5.0f);
-	lantern->model.scale(0.05f, 0.05f, 0.05f);
-	lantern->mesh = Mesh::Get("data/models/lantern/lantern.obj");
-	lantern->material->texture = Texture::Get("data/models/lantern/albedo.png");
 
-	// Create node and add it to the scene
-	SceneNode* phongObj = new SceneNode("Sphere", SceneNode::BASIC, NULL);
-	node_list.push_back(phongObj);
-	phongObj->model.setTranslation(-1.0f, 3.0f, -1.5f);
-	phongObj->mesh = Mesh::Get("data/meshes/sphere.obj");
-	phongObj->material->texture = Texture::Get("data/textures/normal.png");
+	//// Create node and add it to the scene
+	//SceneNode* lantern = new SceneNode("lantern", SceneNode::OBJECT, skybox_texture);
+	//node_list.push_back(lantern);
+	//lantern->model.setTranslation(-2.0f, -2.0f, -2.0f);
+	//lantern->model.scale(0.05f, 0.05f, 0.05f);
+	//lantern->mesh = Mesh::Get("data/models/lantern/lantern.obj");
+	//lantern->material->texture = Texture::Get("data/models/lantern/albedo.png");
+	//lantern->material->metalness_texture = Texture::Get("data/models/lantern/metalness.png");
+	//lantern->material->roughness_texture = Texture::Get("data/models/lantern/roughness.png");
+	//lantern->material->normal_texture = Texture::Get("data/models/lantern/normal.png");
+	////lantern->material->emissive_texture = Texture::Get("data/models/lantern/emissive.png");
+
+	//// Create node and add it to the scene
+	//SceneNode* bench = new SceneNode("Bench", SceneNode::OBJECT, skybox_texture);
+	//node_list.push_back(bench);
+	//bench->model.setTranslation(3.0f, -2.0f, -2.0f);
+	//bench->model.scale(5.0f, 5.0f, 5.0f);
+	//bench->mesh = Mesh::Get("data/models/bench/bench.obj");
+	//bench->material->texture = Texture::Get("data/models/bench/albedo.png");
+	//bench->material->texture_environment = skybox_texture;
+	//bench->material->setTextureHDRE(skybox_hdre);
+
+	//// Create node and add it to the scene
+	//SceneNode* lantern = new SceneNode("Lantern", SceneNode::OBJECT, NULL);
+	//node_list.push_back(lantern);
+	//lantern->model.setTranslation(-8.0f, -5.0f, -5.0f);
+	//lantern->model.scale(0.05f, 0.05f, 0.05f);
+	//lantern->mesh = Mesh::Get("data/models/lantern/lantern.obj");
+	//lantern->material->texture = Texture::Get("data/models/lantern/albedo.png");
+
+	//Create node and add it to the scene
+	SceneNode* sphere = new SceneNode("Sphere", SceneNode::OBJECT, NULL);
+	node_list.push_back(sphere);
+	sphere->model.setTranslation(3.0f, -2.0f, 0.0f);
+	sphere->mesh = Mesh::Get("data/meshes/sphere.obj");
 
 	// LIGHT
-	Light* lightNode1 = new Light();
-	model.setTranslation(-0.7f, 1.0f, 2.5f);
-	model.scale(0.2f, 0.2f, 0.2f);
-	lightNode1->model = model;
-	lightNode1->Id = vec3(0.f, 1.f, 0.f);
-	light_list.push_back(lightNode1);
+	//Light* lightNode1 = new Light();
+	//model.setTranslation(-0.7f, 1.0f, 2.5f);
+	//model.scale(0.2f, 0.2f, 0.2f);
+	//lightNode1->model = model;
+	//lightNode1->Id = vec3(0.f, 1.f, 0.f);
+	//light_list.push_back(lightNode1);
 
 	Light* lightNode2 = new Light();
-	model.setTranslation(-4.0f, 4.0f, -2.6f);
+	model.setTranslation(1.5f, 2.0f, 3.0f);
 	model.scale(0.2f, 0.2f, 0.2f);
 	lightNode2->model = model;
 	lightNode2->maxDist = 23.0f;
 	lightNode2->Is = vec3(1.f, 0.f, 0.f);
 	light_list.push_back(lightNode2);
 
+	setSkyTexture(Application::PANORAMA);
 	//hide the cursor
 	SDL_ShowCursor(!mouse_locked); //hide or show the mouse
 }
@@ -214,18 +241,27 @@ void Application::update(double seconds_elapsed)
 void Application::renderInMenu()
 {
 	bool changed = false;
-	changed |= ImGui::Combo("Environment", (int*)&skyType, "CITY\0SNOW\0DRAGON", 3);
-	if (changed && skyType == CITY)
-		setSkyTexture(CITY);
-	else if (changed && skyType == SNOW)
-		setSkyTexture(SNOW);
-	else if (changed && skyType == DRAGON)
-		setSkyTexture(DRAGON);
+	//changed |= ImGui::Combo("Environment", (int*)&skyType, "CITY\0SNOW\0DRAGON\0PANORAMA\0STUDIO\0TV_STUDIO", 6);
+	changed |= ImGui::Combo("Environment", (int*)&skyType, "PANORAMA\0STUDIO\0TV_STUDIO", 3);
+	//if (changed && skyType == CITY)
+	//	setSkyTexture(CITY);
+	//else if (changed && skyType == SNOW)
+	//	setSkyTexture(SNOW);
+	//else if (changed && skyType == DRAGON)
+	//	setSkyTexture(DRAGON);
+	if (changed && skyType == PANORAMA)
+		setSkyTexture(PANORAMA);
+	else if (changed && skyType == STUDIO)
+		setSkyTexture(STUDIO);
+	else if (changed && skyType == TV_STUDIO)
+		setSkyTexture(TV_STUDIO);
 }
 
 void Application::setSkyTexture(eSkyTexture skyTexture)
 {
 	skyType = skyTexture;
+	unsigned int LEVEL = 0;
+
 	switch (skyTexture)
 	{
 	case CITY:
@@ -233,16 +269,35 @@ void Application::setSkyTexture(eSkyTexture skyTexture)
 		break;
 
 	case SNOW:
-		skybox_texture->cubemapFromImages("data/environments/snow");
+		skybox_hdre = HDRE::Get("data/environments/studio.hdre");
+		skybox_texture->cubemapFromHDRE(skybox_hdre, LEVEL);
 		break;
 
 	case DRAGON:
 		skybox_texture->cubemapFromImages("data/environments/dragonvale");
 		break;
 
+	case PANORAMA:
+		skybox_hdre = HDRE::Get("data/environments/panorama.hdre");
+		skybox_texture->cubemapFromHDRE(skybox_hdre, LEVEL);
+		break;
+
+	case STUDIO:
+		skybox_hdre = HDRE::Get("data/environments/studio.hdre");
+		skybox_texture->cubemapFromHDRE(skybox_hdre, LEVEL);
+		break;
+
+	case TV_STUDIO:
+		skybox_hdre = HDRE::Get("data/environments/tv_studio.hdre");
+		skybox_texture->cubemapFromHDRE(skybox_hdre, LEVEL);
+		break;
+
 	default:
 		break;
 	}
+	for (int j = 0; j < node_list.size(); j++) {
+		node_list[j]->material->setTextureHDRE(skybox_hdre);
+	}	
 }
 
 //Keyboard event handler (sync input)

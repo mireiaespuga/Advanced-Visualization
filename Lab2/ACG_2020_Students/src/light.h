@@ -21,6 +21,7 @@ public:
 	vec3 Is;
 	vec3 Id;
 	float maxDist;
+	float intensity = 1.0f;
 	Mesh* mesh = NULL;
 	Shader* shader = NULL;
 	Matrix44 model;
