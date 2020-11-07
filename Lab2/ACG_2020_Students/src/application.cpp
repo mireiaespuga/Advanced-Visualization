@@ -67,7 +67,7 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	helmet->model.setTranslation(-2.0f, -2.0f, -2.0f);
 	helmet->model.scale(2.0f, 2.0f, 2.0f);
 	helmet->mesh = Mesh::Get("data/models/helmet/helmet.obj");
-	helmet->material->texture = Texture::Get("data/models/helmet/albedo.png");
+	helmet->material->color_texture = Texture::Get("data/models/helmet/albedo.png");
 	helmet->material->metalness_texture = Texture::Get("data/models/helmet/metalness.png");
 	helmet->material->roughness_texture = Texture::Get("data/models/helmet/roughness.png");
 	helmet->material->normal_texture = Texture::Get("data/models/helmet/normal.png");
@@ -80,7 +80,7 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	//lantern->model.setTranslation(-2.0f, -2.0f, -2.0f);
 	//lantern->model.scale(0.05f, 0.05f, 0.05f);
 	//lantern->mesh = Mesh::Get("data/models/lantern/lantern.obj");
-	//lantern->material->texture = Texture::Get("data/models/lantern/albedo.png");
+	//lantern->material->color_texture = Texture::Get("data/models/lantern/albedo.png");
 	//lantern->material->metalness_texture = Texture::Get("data/models/lantern/metalness.png");
 	//lantern->material->roughness_texture = Texture::Get("data/models/lantern/roughness.png");
 	//lantern->material->normal_texture = Texture::Get("data/models/lantern/normal.png");

@@ -44,13 +44,13 @@ void StandardMaterial::setUniforms(Camera* camera, Matrix44 model, Light* light 
 
 	int texture_id = 0;
 
-	if (texture_environment_0) {
-		shader->setUniform("u_texture_prem_0", texture_environment_0, 0);
+	if (texture_environment) {
+		shader->setUniform("u_texture", texture_environment, 0);
 			texture_id++;
 	}
 
-	if (texture && has_texture) {
-		shader->setUniform("u_texture", texture, 1);
+	if (color_texture && has_texture) {
+		shader->setUniform("u_color_texture", color_texture, 1);
 		texture_id++;
 		shader->setUniform("u_has_texture", 1.0);
 	} else shader->setUniform("u_has_texture", 0.0);
@@ -86,7 +86,10 @@ void StandardMaterial::setUniforms(Camera* camera, Matrix44 model, Light* light 
 	shader->setUniform("u_texture_brdfLUT", texture_LUT, 6);
 	texture_id++;
 
-	if (texture_environment_0) {
+	if (texture_environment) {
+		
+		texture_id++;
+		shader->setUniform("u_texture_prem_0", texture_environment_0, 11);
 		texture_id++;
 		shader->setUniform("u_texture_prem_1", texture_environment_1, 7);
 		texture_id++;
@@ -95,11 +98,9 @@ void StandardMaterial::setUniforms(Camera* camera, Matrix44 model, Light* light 
 		shader->setUniform("u_texture_prem_3", texture_environment_3, 9);
 		texture_id++;
 		shader->setUniform("u_texture_prem_4", texture_environment_4, 10);
-		texture_id++;
-		shader->setUniform("u_texture_prem_5", texture_environment_5, 11);
-		texture_id++;
+		
 	}
-
+	
 	//if (ao_texture && has_ao_texture) {
 	//	shader->setUniform("u_ao_texture", ao_texture);
 	//	shader->setUniform("u_has_ao_texture", true);
@@ -184,22 +185,22 @@ void StandardMaterial::setTex(eTexType texturetype)
 	switch (texturetype)
 	{
 	case NORMAL:
-		texture = Texture::Get("data/textures/normal.png");
+		color_texture = Texture::Get("data/textures/normal.png");
 		break;
 
 	case ROUGHNESS:
-		texture = Texture::Get("data/textures/roughness.png");
+		color_texture = Texture::Get("data/textures/roughness.png");
 		break;
 
 	case METALNESS:
-		texture = Texture::Get("data/textures/metalness.png");
+		color_texture = Texture::Get("data/textures/metalness.png");
 		break;
 
 	case COLOR:
-		texture = Texture::Get("data/textures/color.png");
+		color_texture = Texture::Get("data/textures/color.png");
 		break;
 	default:
-		texture = NULL;
+		color_texture = NULL;
 		break;
 	}
 }
@@ -211,7 +212,7 @@ void StandardMaterial::setTextureHDRE(HDRE* hdre)
 	texture_environment_2->cubemapFromHDRE(hdre, 2);
 	texture_environment_3->cubemapFromHDRE(hdre, 3);
 	texture_environment_4->cubemapFromHDRE(hdre, 4);
-	texture_environment_5->cubemapFromHDRE(hdre, 5);
+	texture_environment->cubemapFromHDRE(hdre,0);
 }
 
 void StandardMaterial::renderInMenu(bool basic=false)
@@ -219,7 +220,7 @@ void StandardMaterial::renderInMenu(bool basic=false)
 	//Material
 	//if (ImGui::TreeNode("Custom")){
 	ImGui::ColorEdit3("Color", (float*)&color); // Edit 3 floats representing a color
-	if (texture) {
+	if (color_texture) {
 		ImGui::Checkbox("Enable color texture", &has_texture);
 	}
 	if (emissive_texture) {
@@ -319,5 +320,5 @@ void Material::setTextureHDRE(HDRE* hdre)
 	texture_environment_2->cubemapFromHDRE(hdre, 2);
 	texture_environment_3->cubemapFromHDRE(hdre, 3);
 	texture_environment_4->cubemapFromHDRE(hdre, 4);
-	texture_environment_5->cubemapFromHDRE(hdre, 5);
+	texture_environment->cubemapFromHDRE(hdre);
 }
