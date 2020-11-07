@@ -12,7 +12,7 @@ class Material {
 public:
 
 	Shader* shader = NULL;
-	Texture* texture = NULL;
+	Texture* color_texture = NULL;
 	Texture* metalness_texture = NULL;
 	Texture* roughness_texture = NULL;
 	Texture* normal_texture = NULL;
@@ -34,7 +34,7 @@ public:
 	Texture* texture_environment_2 = new Texture();
 	Texture* texture_environment_3 = new Texture();
 	Texture* texture_environment_4 = new Texture();
-	Texture* texture_environment_5 = new Texture();
+	Texture* texture_environment = new Texture();
 
 	vec4 color;
 	vec3 Ka;

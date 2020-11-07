@@ -26,14 +26,14 @@ SceneNode::SceneNode(const char* name, eNodeType nodeType, Texture* texture)
 		this->mesh = mesh;
 		this->model.setScale(50.0f, 50.0f, 50.0f);
 		material->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/textureCube.fs");
-		material->texture = texture;
+		material->color_texture = texture;
 		this->material = material;
 		break;
 
 	case REFLECT:
 		this->light = false;
 		material->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/reflect.fs");
-		material->texture = texture;
+		material->color_texture = texture;
 		this->material = material;
 		break;
 
