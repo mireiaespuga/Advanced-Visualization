@@ -15,6 +15,7 @@ uniform float u_roughness;
 //light
 uniform vec3 u_light_position;
 uniform vec3 u_light_color;
+uniform vec3 u_ambient_light;
 uniform float u_light_intensity;
 uniform float u_light_maxdist;
 
@@ -180,6 +181,12 @@ void main()
 	if (u_has_emissive_texture == 1.0){
 		emissive= texture2D( u_emissive_texture, uv );
 	}
+
+	float ambient_light = 1.0;
+	if (u_has_ao_texture == 1.0){
+		ambient_light = clamp(texture2D( u_ao_texture, uv ).x, 0.01, 0.99);
+	}
+
 	
 	
 	//vector towards the eye (V)
@@ -198,8 +205,8 @@ void main()
 
 	
 	if (u_has_normal_texture == 1.0){
-		vec4 normal_c= texture2D( u_normal_texture, uv );
-		N = perturbNormal( N, V, uv, normal_c.xyz );
+		vec3 normal_c = texture2D( u_normal_texture, uv ).xyz;
+		N = perturbNormal( N, V, uv, normal_c );
 	}
 
 	//compute 
@@ -218,13 +225,6 @@ void main()
 	vec3 R = reflect( -V, N );
 	R = normalize(R);
 
-	//compute refletion
-	//vec3 R = reflect(-L,N);
-	//float RoV = dot(R,v_position);
-
-	//light cannot be negative (but the dot product can)
-	//RoV = clamp( RoV, 0.0, 1.0);
-
 	//specular F0 (conductors -> base color, dielectrics -> vec3(0.04))
 	vec3 f0 = (1.0 - metalness) * vec3(0.04) + metalness * color.xyz;
 
@@ -239,18 +239,17 @@ void main()
 
 	//diffuse and specular terms from direct lighting
 	vec3 direct = FSpecular + FDiffuse;
+
+	//IBL
 	//diffuse IBL
-	vec3 diffuseSample = getReflectionColor ( N, roughness );
-	//vec3 diffuseSample = vec3(0.5);
-	vec3 diffuseIBL = diffuseSample * diffuseColor;
+	vec3 diffuseSample = getReflectionColor ( R, roughness );
+	vec3 diffuseIBL = diffuseSample * (diffuseColor + ambient_light * u_ambient_light);
 
 	//specular IBL
 	vec3 specularSample = getReflectionColor ( R, roughness );
-	//vec3 specularSample = vec3(0.5);
 	vec4 brdfLUT = texture2D( u_texture_brdfLUT, vec2(roughness, NoV));
 	vec3 SpecularBRDF = f0 * brdfLUT.x + brdfLUT.y;
 	vec3 specularIBL = specularSample * SpecularBRDF;
-	//vec3 specularIBL = specularSample * FSpecular;
 
 	//diffuse and specular terms from IBL
 	vec3 IBL = diffuseIBL + specularIBL;
