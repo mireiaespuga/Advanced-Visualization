@@ -28,76 +28,68 @@ void StandardMaterial::setUniforms(Camera* camera, Matrix44 model, Light* light 
 		shader->setUniform("u_light_maxdist", light->maxDist);
 		shader->setUniform("u_light_color", light->Id);
 		shader->setUniform("u_light_intensity", light->intensity);
-		shader->setUniform("u_metalness", metalness);
-		shader->setUniform("u_roughness", roughness);
-
+		if (light->hasAmbient) {
+			shader->setUniform("u_ambient_light", light->ambient);
+			if (ao_texture && has_ao_texture) {
+				shader->setUniform("u_ao_texture", ao_texture, 12);
+				shader->setUniform("u_has_ao_texture", 1.0);
+			}
+			else shader->setUniform("u_has_ao_texture", 0.0);
+		} else {
+			shader->setUniform("u_ambient_light", vec3(1.0f, 1.0f, 1.0f));
+		}
 	}
 	else {
 		shader->setUniform("u_has_light", 0.0);
 	}
 
-	int texture_id = 0;
+	shader->setUniform("u_metalness", metalness);
+	shader->setUniform("u_roughness", roughness);
 
-	
+	if (texture_environment) {
+		shader->setUniform("u_texture", texture_environment, 0);
+	}
 
 	if (color_texture && has_texture) {
 		shader->setUniform("u_color_texture", color_texture, 1);
-		texture_id++;
 		shader->setUniform("u_has_texture", 1.0);
 	} else shader->setUniform("u_has_texture", 0.0);
 
 	if (metalness_texture && has_metalness_texture) {
 		shader->setUniform("u_metalness_texture", metalness_texture, 2);
-		texture_id++;
 		shader->setUniform("u_has_metalness_texture", 1.0);
 	}
 	else shader->setUniform("u_has_metalness_texture", 0.0);
 
 	if (roughness_texture && has_roughness_texture) {
 		shader->setUniform("u_roughness_texture", roughness_texture, 3);
-		texture_id++;
 		shader->setUniform("u_has_roughness_texture", 1.0);
 	}
 	else shader->setUniform("u_has_roughness_texture", 0.0);
 
 	if (normal_texture && has_normal_texture) {
 		shader->setUniform("u_normal_texture", normal_texture, 4);
-		texture_id++;
 		shader->setUniform("u_has_normal_texture", 1.0);
 	}
 	else shader->setUniform("u_has_normal_texture", 0.0);
 
 	if (emissive_texture && has_emissive_texture) {
 		shader->setUniform("u_emissive_texture", emissive_texture, 5);
-		texture_id++;
 		shader->setUniform("u_has_emissive_texture", 1.0);
 	}
 	else shader->setUniform("u_has_emissive_texture", 0.0);
 
 	shader->setUniform("u_texture_brdfLUT", texture_LUT, 6);
-	texture_id++;
 	
 	if (texture_environment) {
 		shader->setUniform("u_texture", texture_environment, 12);
-		texture_id++;
 		shader->setUniform("u_texture_prem_0", texture_environment_0, 7);
-		texture_id++;
 		shader->setUniform("u_texture_prem_1", texture_environment_1, 8);
-		texture_id++;
 		shader->setUniform("u_texture_prem_2", texture_environment_2, 9);
-		texture_id++;
 		shader->setUniform("u_texture_prem_3", texture_environment_3, 10);
-		texture_id++;
 		shader->setUniform("u_texture_prem_4", texture_environment_4, 11);
 		
 	}
-	
-	//if (ao_texture && has_ao_texture) {
-	//	shader->setUniform("u_ao_texture", ao_texture);
-	//	shader->setUniform("u_has_ao_texture", true);
-	//}
-
-
 }
 
 void StandardMaterial::render(Mesh* mesh, Matrix44 model, Camera* camera, Light* light = NULL)
@@ -213,6 +205,9 @@ void StandardMaterial::renderInMenu(bool basic=false)
 	ImGui::ColorEdit3("Color", (float*)&color); // Edit 3 floats representing a color
 	if (color_texture) {
 		ImGui::Checkbox("Enable color texture", &has_texture);
+	}
+	if (ao_texture) {
+		ImGui::Checkbox("Enable ao texture", &has_ao_texture);
 	}
 	if (emissive_texture) {
 		ImGui::Checkbox("Enable emissive texture", &has_emissive_texture);

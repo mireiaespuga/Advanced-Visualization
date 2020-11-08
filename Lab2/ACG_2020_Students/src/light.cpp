@@ -66,10 +66,12 @@ void Light::renderInMenu()
 	ImGui::SliderFloat("Intensity", &intensity, 1.0f, 10.0f);
 
 	ImGui::ColorEdit3("Diffuse", (float*)&Id); // Edit 3 floats representing a color
-	ImGui::ColorEdit3("Ambient", (float*)&Ia); // Edit 3 floats representing a color
+	ImGui::ColorEdit3("Ambient", (float*)&ambient); // Edit 3 floats representing a color
+
 	ImGui::ColorEdit3("Specular", (float*)&Is); // Edit 3 floats representing a color
 	
 	ImGui::Checkbox("Enable", &enable);
 	ImGui::Checkbox("Show", &show_light);
+	ImGui::Checkbox("Enable Ambient", &hasAmbient);
 }
 

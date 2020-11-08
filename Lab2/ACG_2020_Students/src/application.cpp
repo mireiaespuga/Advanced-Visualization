@@ -52,14 +52,7 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	node_list.push_back(node);
 	node->model.setTranslation(camera->eye.x, camera->eye.y, camera->eye.z);
 	node->model.scale(50.0f, 50.0f, 50.0f);
-	//node->material->setTextureHDRE(skybox_hdre);
 
-	// Create node and add it to the scene
-	//SceneNode* sphereNode = new SceneNode("Reflect", SceneNode::REFLECT, skybox_texture);
-	//node_list.push_back(sphereNode);
-	//sphereNode->model.setTranslation(5.0f, -7.0f, 6.0f);
-	//sphereNode->model.scale(5.0f, 5.0f, 5.0f);
-	//sphereNode->mesh = Mesh::Get("data/models/helmet/helmet.obj");
 
 	// Create node and add it to the scene
 	SceneNode* helmet = new SceneNode("Helmet", SceneNode::OBJECT, skybox_texture);
@@ -72,10 +65,11 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	helmet->material->roughness_texture = Texture::Get("data/models/helmet/roughness.png");
 	helmet->material->normal_texture = Texture::Get("data/models/helmet/normal.png");
 	helmet->material->emissive_texture = Texture::Get("data/models/helmet/emissive.png");
+	helmet->material->ao_texture = Texture::Get("data/models/helmet/ao.png");
 
 
 	//// Create node and add it to the scene
-	//SceneNode* lantern = new SceneNode("lantern", SceneNode::OBJECT, skybox_texture);
+	//SceneNode* lantern = new SceneNode("Lantern", SceneNode::OBJECT, skybox_texture);
 	//node_list.push_back(lantern);
 	//lantern->model.setTranslation(-2.0f, -2.0f, -2.0f);
 	//lantern->model.scale(0.05f, 0.05f, 0.05f);
@@ -86,29 +80,16 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	//lantern->material->normal_texture = Texture::Get("data/models/lantern/normal.png");
 	////lantern->material->emissive_texture = Texture::Get("data/models/lantern/emissive.png");
 
-	//// Create node and add it to the scene
-	//SceneNode* bench = new SceneNode("Bench", SceneNode::OBJECT, skybox_texture);
-	//node_list.push_back(bench);
-	//bench->model.setTranslation(3.0f, -2.0f, -2.0f);
-	//bench->model.scale(5.0f, 5.0f, 5.0f);
-	//bench->mesh = Mesh::Get("data/models/bench/bench.obj");
-	//bench->material->texture = Texture::Get("data/models/bench/albedo.png");
-	//bench->material->texture_environment = skybox_texture;
-	//bench->material->setTextureHDRE(skybox_hdre);
-
-	//// Create node and add it to the scene
-	//SceneNode* lantern = new SceneNode("Lantern", SceneNode::OBJECT, NULL);
-	//node_list.push_back(lantern);
-	//lantern->model.setTranslation(-8.0f, -5.0f, -5.0f);
-	//lantern->model.scale(0.05f, 0.05f, 0.05f);
-	//lantern->mesh = Mesh::Get("data/models/lantern/lantern.obj");
-	//lantern->material->texture = Texture::Get("data/models/lantern/albedo.png");
 
 	//Create node and add it to the scene
 	SceneNode* sphere = new SceneNode("Sphere", SceneNode::OBJECT, NULL);
 	node_list.push_back(sphere);
 	sphere->model.setTranslation(3.0f, -2.0f, 0.0f);
 	sphere->mesh = Mesh::Get("data/meshes/sphere.obj");
+	sphere->material->color_texture = Texture::Get("data/textures/sphere/sphere_color.png");
+	sphere->material->roughness_texture = Texture::Get("data/textures/sphere/sphere_roughness.png");
+	sphere->material->normal_texture = Texture::Get("data/textures/sphere/sphere_normal.png");
+	sphere->material->ao_texture = Texture::Get("data/textures/sphere/sphere_ao.png");
 
 	// LIGHT
 	//Light* lightNode1 = new Light();
@@ -165,9 +146,13 @@ void Application::render(void)
 				}
 				for (int j = 0; j < node_list.size(); j++) {
 					if (node_list[j]->light) { // only objects that are afected by light will be rendered
+						if (first)
+							light_list[i]->hasAmbient = true;
 						node_list[j]->render(camera, light_list[i]);
 					} 
 					if (render_wireframe)
+						//if (first)
+							//light_list[i]->hasAmbient ;
 						node_list[j]->renderWireframe(camera);
 				}
 				first = false;
