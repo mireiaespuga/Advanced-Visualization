@@ -30,13 +30,7 @@ void StandardMaterial::setUniforms(Camera* camera, Matrix44 model, Light* light 
 		shader->setUniform("u_light_intensity", light->intensity);
 		shader->setUniform("u_metalness", metalness);
 		shader->setUniform("u_roughness", roughness);
-		//shader->setUniform("Ia", light->Ia);
-		//shader->setUniform("Is", light->Is);
-	/*	shader->setUniform("Ka", Ka);
-		shader->setUniform("Kd", Kd);
-		shader->setUniform("Ks", Ks);
-		shader->setUniform("alpha", alpha);*/
-		//shader->setUniform("u_has_light", 1.0);
+
 	}
 	else {
 		shader->setUniform("u_has_light", 0.0);
@@ -44,10 +38,7 @@ void StandardMaterial::setUniforms(Camera* camera, Matrix44 model, Light* light 
 
 	int texture_id = 0;
 
-	if (texture_environment) {
-		shader->setUniform("u_texture", texture_environment, 0);
-			texture_id++;
-	}
+	
 
 	if (color_texture && has_texture) {
 		shader->setUniform("u_color_texture", color_texture, 1);
@@ -85,19 +76,19 @@ void StandardMaterial::setUniforms(Camera* camera, Matrix44 model, Light* light 
 
 	shader->setUniform("u_texture_brdfLUT", texture_LUT, 6);
 	texture_id++;
-
+	
 	if (texture_environment) {
-		
+		shader->setUniform("u_texture", texture_environment, 12);
 		texture_id++;
-		shader->setUniform("u_texture_prem_0", texture_environment_0, 11);
+		shader->setUniform("u_texture_prem_0", texture_environment_0, 7);
 		texture_id++;
-		shader->setUniform("u_texture_prem_1", texture_environment_1, 7);
+		shader->setUniform("u_texture_prem_1", texture_environment_1, 8);
 		texture_id++;
-		shader->setUniform("u_texture_prem_2", texture_environment_2, 8);
+		shader->setUniform("u_texture_prem_2", texture_environment_2, 9);
 		texture_id++;
-		shader->setUniform("u_texture_prem_3", texture_environment_3, 9);
+		shader->setUniform("u_texture_prem_3", texture_environment_3, 10);
 		texture_id++;
-		shader->setUniform("u_texture_prem_4", texture_environment_4, 10);
+		shader->setUniform("u_texture_prem_4", texture_environment_4, 11);
 		
 	}
 	
@@ -207,12 +198,12 @@ void StandardMaterial::setTex(eTexType texturetype)
 
 void StandardMaterial::setTextureHDRE(HDRE* hdre)
 {
-	texture_environment_0->cubemapFromHDRE(hdre, 0);
-	texture_environment_1->cubemapFromHDRE(hdre, 1);
-	texture_environment_2->cubemapFromHDRE(hdre, 2);
-	texture_environment_3->cubemapFromHDRE(hdre, 3);
-	texture_environment_4->cubemapFromHDRE(hdre, 4);
-	texture_environment->cubemapFromHDRE(hdre,0);
+	texture_environment->cubemapFromHDRE(hdre, 0);
+	texture_environment_0->cubemapFromHDRE(hdre, 1);
+	texture_environment_1->cubemapFromHDRE(hdre, 2);
+	texture_environment_2->cubemapFromHDRE(hdre, 3);
+	texture_environment_3->cubemapFromHDRE(hdre, 4);
+	texture_environment_4->cubemapFromHDRE(hdre, 5);
 }
 
 void StandardMaterial::renderInMenu(bool basic=false)

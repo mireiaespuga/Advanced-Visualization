@@ -97,6 +97,17 @@ float Geometry( float NdotV, float NdotL, float roughness)
 	return GL * GV;
 }
 
+// degamma
+vec3 gamma_to_linear(vec3 color)
+{
+	return pow(color, vec3(GAMMA));
+}
+
+// gamma
+vec3 linear_to_gamma(vec3 color)
+{
+	return pow(color, vec3(INV_GAMMA));
+}
 
 //this is the cook torrance specular reflection model
 vec3 specularDFG( float roughness, vec3 f0, float NoH, float NoV, float NoL, float LoH )
@@ -128,13 +139,14 @@ vec3 getReflectionColor(vec3 r, float roughness)
 	else if(lod < 4.0) color = mix( textureCube(u_texture_prem_2, r), textureCube(u_texture_prem_3, r), lod - 3.0 );
 	else if(lod < 5.0) color = mix( textureCube(u_texture_prem_3, r), textureCube(u_texture_prem_4, r), lod - 4.0 );
 	else color = textureCube(u_texture_prem_4, r);
-
+	
+	color.rgb = gamma_to_linear(color.rgb);
 	// Any other computations in linear-space (examples)
 	// color *= u_exposure;
 	// color *= u_tintColor;
 
 	// Gamma correction: apply here only in case it's the last step (debug)
-	// color.rgb = linear_to_gamma(color.rgb);
+	//color.rgb = linear_to_gamma(color.rgb);
 
 	return color.rgb;
 }
@@ -149,6 +161,7 @@ void main()
 	} else {
 		color = u_color;
 	}
+
 
 	float metalness;
 	float roughness;
@@ -185,8 +198,8 @@ void main()
 
 	
 	if (u_has_normal_texture == 1.0){
-		vec3 normal_c= texture2D( u_normal_texture, uv );
-		N=perturbNormal( N, V, uv, normal_c );
+		vec4 normal_c= texture2D( u_normal_texture, uv );
+		N = perturbNormal( N, V, uv, normal_c.xyz );
 	}
 
 	//compute 
@@ -227,13 +240,13 @@ void main()
 	//diffuse and specular terms from direct lighting
 	vec3 direct = FSpecular + FDiffuse;
 	//diffuse IBL
-	//vec3 diffuseSample = getReflectionColor ( N, roughness );
-	vec3 diffuseSample = vec3(0.5);
+	vec3 diffuseSample = getReflectionColor ( N, roughness );
+	//vec3 diffuseSample = vec3(0.5);
 	vec3 diffuseIBL = diffuseSample * diffuseColor;
 
 	//specular IBL
-	//vec3 specularSample = getReflectionColor ( R, roughness );
-	vec3 specularSample =vec3(0.5);
+	vec3 specularSample = getReflectionColor ( R, roughness );
+	//vec3 specularSample = vec3(0.5);
 	vec4 brdfLUT = texture2D( u_texture_brdfLUT, vec2(roughness, NoV));
 	vec3 SpecularBRDF = f0 * brdfLUT.x + brdfLUT.y;
 	vec3 specularIBL = specularSample * SpecularBRDF;
@@ -255,7 +268,7 @@ void main()
 	color.xyz = light;
 
 	//gamma
-	//color.xyz = pow(color.xyz, vec3(INV_GAMMA));
+	color.xyz = linear_to_gamma(color.xyz);
 
 	gl_FragColor = color + emissive;
 
