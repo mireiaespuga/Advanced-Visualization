@@ -187,8 +187,6 @@ void main()
 		ambient_light = clamp(texture2D( u_ao_texture, uv ).x, 0.01, 0.99);
 	}
 
-	
-	
 	//vector towards the eye (V)
 	vec3 V = normalize( u_camera_position - v_world_position );
 
@@ -243,7 +241,7 @@ void main()
 	//IBL
 	//diffuse IBL
 	vec3 diffuseSample = getReflectionColor ( R, roughness );
-	vec3 diffuseIBL = diffuseSample * (diffuseColor + ambient_light * u_ambient_light);
+	vec3 diffuseIBL = diffuseSample * diffuseColor;
 
 	//specular IBL
 	vec3 specularSample = getReflectionColor ( R, roughness );
