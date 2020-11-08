@@ -36,6 +36,8 @@ public:
 	Texture* texture_environment_4 = new Texture();
 	Texture* texture_environment = new Texture();
 
+	struct environment;
+
 	vec4 color;
 	vec3 Ka;
 	vec3 Ks;
