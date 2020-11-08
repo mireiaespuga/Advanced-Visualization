@@ -266,10 +266,11 @@ void main()
 
 	//apply to final pixel color
 	color.xyz = light;
+	color = color + emissive;
 
 	//gamma
 	color.xyz = linear_to_gamma(color.xyz);
 
-	gl_FragColor = color + emissive;
+	gl_FragColor = color;
 
 }
