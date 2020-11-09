@@ -31,7 +31,7 @@ void StandardMaterial::setUniforms(Camera* camera, Matrix44 model, Light* light 
 		if (light->hasAmbient) {
 			shader->setUniform("u_ambient_light", light->ambient);
 			if (ao_texture && has_ao_texture) {
-				shader->setUniform("u_ao_texture", ao_texture, 12);
+				shader->setUniform("u_ao_texture", ao_texture, 13);
 				shader->setUniform("u_has_ao_texture", 1.0);
 			}
 			else shader->setUniform("u_has_ao_texture", 0.0);
