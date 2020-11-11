@@ -28,6 +28,7 @@ uniform float u_has_emissive_texture;
 uniform float u_has_opacity_texture;
 uniform float u_has_ao_texture;
 uniform float u_has_dispf_texture;
+uniform float u_metalness_in_roughness;
 
 uniform sampler2D u_color_texture;
 uniform sampler2D u_metalness_texture;
@@ -214,10 +215,15 @@ void setMaterialProps(vec2 uv)
 	
 	//Color to linear
 	matProps.color.rgb = gamma_to_linear(matProps.color.rgb);
-
 	if (u_has_metalness_texture == 1.0){
-		matProps.metalness = clamp(texture2D( u_metalness_texture, uv ).x, 0.01, 0.99);
-	} else {
+		if(u_metalness_in_roughness == 0.0){ // if metalness has its own texture
+			matProps.metalness = clamp(texture2D( u_metalness_texture, uv ).x, 0.01, 0.99);
+		}
+		else {
+			matProps.metalness = clamp(texture2D( u_roughness_texture, uv ).y, 0.01, 0.99);
+		}
+	}
+	else {
 		matProps.metalness = u_metalness;
 	}
 

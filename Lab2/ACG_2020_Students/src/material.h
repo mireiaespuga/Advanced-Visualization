@@ -10,7 +10,6 @@
 
 class Material {
 public:
-
 	Shader* shader = NULL;
 	Texture* color_texture = NULL;
 	Texture* metalness_texture = NULL;
@@ -20,6 +19,7 @@ public:
 	Texture* ao_texture = NULL;
 	Texture* opacity_texture = NULL;
 	Texture* displacement_texture = NULL;
+	Texture* texture_LUT = Texture::Get("data/textures/brdfLUT.png");
 
 	bool has_texture = false;
 	bool has_metalness_texture = false;
@@ -29,27 +29,20 @@ public:
 	bool has_ao_texture = false;
 	bool has_opacity_texture = false;
 	bool has_displacement_texture = false;
-
-	Texture* texture_LUT = Texture::Get("data/textures/brdfLUT.png");
-
-	Texture* texture_environment_0 = new Texture();
-	Texture* texture_environment_1 = new Texture();
-	Texture* texture_environment_2 = new Texture();
-	Texture* texture_environment_3 = new Texture();
-	Texture* texture_environment_4 = new Texture();
-	Texture* texture_environment = new Texture();
-
-	struct environment;
+	bool metalness_in_roughness_texture = false;
+	
+	struct Environment {
+		Texture* texture_environment_0 = new Texture();
+		Texture* texture_environment_1 = new Texture();
+		Texture* texture_environment_2 = new Texture();
+		Texture* texture_environment_3 = new Texture();
+		Texture* texture_environment_4 = new Texture();
+		Texture* texture_environment = new Texture();
+	} environment;
 
 	vec4 color;
-	vec3 Ka;
-	vec3 Ks;
-	vec3 Kd;
 	float metalness;
 	float roughness;
-	float alpha;
-	enum  eMatType { GENERIC, BLACKRUBBER, PEARL, GOLD };
-	char matType;
 	enum  eTexType { FACTORYWALL, MOSSYROCK, MARBLETILE };
 	char texType;
 	bool isSphere = FALSE;
@@ -58,7 +51,6 @@ public:
 	virtual void setUniforms(Camera* camera, Matrix44 model, Light* light) = 0;
 	virtual void render(Mesh* mesh, Matrix44 model, Camera * camera, Light* light) = 0;
 	virtual void renderInMenu(bool basic) = 0;
-	virtual void setMaterial(eMatType material) = 0;
 	virtual void setTex(eTexType texturetype);
 	virtual void setTextureHDRE(HDRE* hdre);
 
@@ -73,7 +65,6 @@ public:
 	void setUniforms(Camera* camera, Matrix44 model, Light* light );
 	void render(Mesh* mesh, Matrix44 model, Camera * camera, Light* light );
 	void renderInMenu(bool basic);
-	void setMaterial(eMatType material);
 	void setTex(eTexType texturetype);
 	void setTextureHDRE(HDRE* hdre);
 };
