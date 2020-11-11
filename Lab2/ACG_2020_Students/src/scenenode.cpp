@@ -98,7 +98,7 @@ void SceneNode::renderInMenu()
 			//Material
 			if (material && ImGui::TreeNode("Material"))
 			{
-				material->renderInMenu(nodeType == eNodeType::BASIC);
+				material->renderInMenu(material->isSphere);
 				ImGui::TreePop();
 			}
 			ImGui::Checkbox("Light", &light);

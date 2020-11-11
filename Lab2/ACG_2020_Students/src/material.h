@@ -18,6 +18,7 @@ public:
 	Texture* normal_texture = NULL;
 	Texture* emissive_texture = NULL;
 	Texture* ao_texture = NULL;
+	Texture* opacity_texture = NULL;
 
 	bool has_texture = false;
 	bool has_metalness_texture = false;
@@ -25,6 +26,7 @@ public:
 	bool has_normal_texture = false;
 	bool has_emissive_texture = false;
 	bool has_ao_texture = false;
+	bool has_opacity_texture = false;
 
 	
 	Texture* texture_LUT = Texture::Get("data/textures/brdfLUT.png");;
@@ -47,8 +49,9 @@ public:
 	float alpha;
 	enum  eMatType { GENERIC, BLACKRUBBER, PEARL, GOLD };
 	char matType;
-	enum  eTexType { NORMAL, ROUGHNESS, METALNESS, COLOR, NONE };
+	enum  eTexType { FACTORYWALL, MOSSYROCK, MARBLETILE };
 	char texType;
+	bool isSphere = FALSE;
 
 
 	virtual void setUniforms(Camera* camera, Matrix44 model, Light* light) = 0;

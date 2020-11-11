@@ -79,6 +79,12 @@ void StandardMaterial::setUniforms(Camera* camera, Matrix44 model, Light* light 
 	}
 	else shader->setUniform("u_has_emissive_texture", 0.0);
 
+	if (opacity_texture && has_opacity_texture) {
+		shader->setUniform("u_opacity_texture", opacity_texture, 14);
+		shader->setUniform("u_has_opacity_texture", 1.0);
+	}
+	else shader->setUniform("u_has_opacity_texture", 0.0);
+
 	shader->setUniform("u_texture_brdfLUT", texture_LUT, 6);
 	
 	if (texture_environment) {
@@ -133,13 +139,13 @@ void StandardMaterial::setMaterial(eMatType material)
 		//color = vec4(1.f, 1.f, 1.f, 1.f);
 		Ka = vec3(0.02f, 0.02f, 0.02f);
 		Kd = vec3(0.01f, 0.01f, 0.01f);
-		Ks = vec3(0.4f, 0.4f, 0.4f); 
-		alpha = 0.078125*128;
+		Ks = vec3(0.4f, 0.4f, 0.4f);
+		alpha = 0.078125 * 128;
 		metalness = 0.5;
 		roughness = 0.5;
 		break;
 
-	case PEARL: 
+	case PEARL:
 		//color = vec4(1.f, 1.f, 1.f, 1.f);
 		Ka = vec3(0.25f, 0.20725f, 0.20725f);
 		Kd = vec3(1.0f, 0.829f, 0.829f);
@@ -167,23 +173,34 @@ void StandardMaterial::setTex(eTexType texturetype)
 	texType = texturetype;
 	switch (texturetype)
 	{
-	case NORMAL:
-		color_texture = Texture::Get("data/textures/normal.png");
+	case FACTORYWALL:
+		color_texture = Texture::Get("data/textures/factory_wall/sphere_color.png");
+		roughness_texture = Texture::Get("data/textures/factory_wall/sphere_roughness.png");
+		normal_texture = Texture::Get("data/textures/factory_wall/sphere_normal.png");
+		ao_texture = Texture::Get("data/textures/factory_wall/sphere_ao.png");
+		metalness_texture = Texture::Get("data/textures/factory_wall/sphere_metalness.png");
+		isSphere = TRUE;
 		break;
 
-	case ROUGHNESS:
-		color_texture = Texture::Get("data/textures/roughness.png");
+	case MOSSYROCK:
+		color_texture = Texture::Get("data/textures/mossy_rock/sphere_color.png");
+		roughness_texture = Texture::Get("data/textures/mossy_rock/sphere_roughness.png");
+		normal_texture = Texture::Get("data/textures/mossy_rock/sphere_normal.png");
+		ao_texture = Texture::Get("data/textures/mossy_rock/sphere_ao.png");
+		metalness_texture = NULL;
+		isSphere = TRUE;
 		break;
 
-	case METALNESS:
-		color_texture = Texture::Get("data/textures/metalness.png");
+	case MARBLETILE:
+		color_texture = Texture::Get("data/textures/marble/sphere_color.png");
+		roughness_texture = Texture::Get("data/textures/marble/sphere_roughness.png");
+		normal_texture = Texture::Get("data/textures/marble/sphere_normal.png");
+		ao_texture = Texture::Get("data/textures/marble/sphere_ao.png");
+		metalness_texture = Texture::Get("data/textures/marble/sphere_metalness.png");
+		isSphere = TRUE;
 		break;
 
-	case COLOR:
-		color_texture = Texture::Get("data/textures/color.png");
-		break;
 	default:
-		color_texture = NULL;
 		break;
 	}
 }
@@ -203,6 +220,18 @@ void StandardMaterial::renderInMenu(bool basic=false)
 	//Material
 	//if (ImGui::TreeNode("Custom")){
 	ImGui::ColorEdit3("Color", (float*)&color); // Edit 3 floats representing a color
+	if (isSphere && ImGui::TreeNode("Textures"))
+	{
+		bool changed = false;
+		changed |= ImGui::Combo("Ex", (int*)&texType, "FACTORYWALL\0MOSSYROCK\0MARBLETILE", 3);
+		if (changed && texType == FACTORYWALL)
+			setTex(FACTORYWALL);
+		else if (changed && texType == MOSSYROCK)
+			setTex(MOSSYROCK);
+		else if (changed && texType == MARBLETILE)
+			setTex(MARBLETILE);
+		ImGui::TreePop();
+	}
 	if (color_texture) {
 		ImGui::Checkbox("Enable color texture", &has_texture);
 	}
@@ -220,6 +249,9 @@ void StandardMaterial::renderInMenu(bool basic=false)
 	}
 	if (metalness_texture) {
 		ImGui::Checkbox("Enable metalness texture", &has_metalness_texture);
+	}
+	if (opacity_texture) {
+		ImGui::Checkbox("Enable opacity texture", &has_opacity_texture);
 	}
 	if (!has_roughness_texture) {
 		ImGui::SliderFloat("Roughness", &roughness, 0.0f, 1.0f);
@@ -246,22 +278,7 @@ void StandardMaterial::renderInMenu(bool basic=false)
 	//		setMaterial(GOLD);
 	//	ImGui::TreePop();
 	//}
-	//if (basic && ImGui::TreeNode("Basic Textures"))
-	//{
-	//	bool changed = false;
-	//	changed |= ImGui::Combo("Ex", (int*)&texType, "NORMAL\0ROUGHNESS\0METALNESS\0COLOR\0NONE", 4);
-	//	if (changed && texType == NORMAL)
-	//		setTex(NORMAL);
-	//	else if (changed && texType == ROUGHNESS)
-	//		setTex(ROUGHNESS);
-	//	else if (changed && texType == METALNESS)
-	//		setTex(METALNESS);
-	//	else if (changed && texType == COLOR)
-	//		setTex(COLOR);
-	//	else if (changed && texType == NONE)
-	//		setTex(NONE);
-	//	ImGui::TreePop();
-	//}
+	
 
 }
 
