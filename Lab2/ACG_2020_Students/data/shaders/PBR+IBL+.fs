@@ -25,6 +25,7 @@ uniform float u_has_metalness_texture;
 uniform float u_has_roughness_texture;
 uniform float u_has_normal_texture;
 uniform float u_has_emissive_texture;
+uniform float u_has_opacity_texture;
 uniform float u_has_ao_texture;
 
 uniform sampler2D u_color_texture;
@@ -32,6 +33,7 @@ uniform sampler2D u_metalness_texture;
 uniform sampler2D u_roughness_texture;
 uniform sampler2D u_normal_texture;
 uniform sampler2D u_emissive_texture;
+uniform sampler2D u_opacity_texture;
 uniform sampler2D u_ao_texture;
 uniform sampler2D u_texture_brdfLUT;
 
@@ -63,6 +65,7 @@ struct SceneVectors{
 
 struct MatProps{
 	float ambient_occlusion;
+	float opacity;
 	float metalness;
 	float roughness;
 	vec4 emissive;
@@ -174,9 +177,6 @@ vec3 getReflectionColor(vec3 r, float roughness)
 	// color *= u_exposure;
 	// color *= u_tintColor;
 
-	// Gamma correction: apply here only in case it's the last step (debug)
-	//color.rgb = linear_to_gamma(color.rgb);
-
 	return color.rgb;
 }
 
@@ -233,6 +233,12 @@ void setMaterialProps(vec2 uv)
 	//Emissive to linear
 	matProps.emissive.rgb = gamma_to_linear(matProps.emissive.rgb);
 
+	if (u_has_opacity_texture == 1.0){
+		matProps.opacity = clamp(texture2D( u_opacity_texture, uv ).x, 0.0, 1.0);
+	}else{
+		matProps.opacity = 1.0;
+	}
+
 	if (u_has_ao_texture == 1.0){
 		matProps.ambient_occlusion = clamp(texture2D( u_ao_texture, uv ).x, 0.01, 0.99);
 	}else{
@@ -247,7 +253,6 @@ void setMaterialProps(vec2 uv)
 
 vec3 computeDirect(vec3 f0, vec3 diffuseColor)
 {
-	
 	//compute the specular
 	vec3 FSpecular = specularDFG(  matProps.roughness, f0, sceneVectors.NoH, sceneVectors.NoV, sceneVectors.NoL, sceneVectors.LoH);
 
@@ -272,7 +277,7 @@ vec3 computeIBL(vec3 f0, vec3 diffuseColor)
 	vec3 specularIBL = specularSample * SpecularBRDF;
 
 	//diffuse and specular terms from IBL
-	return diffuseIBL + specularIBL;
+	return (diffuseIBL + specularIBL);
 }
 
 vec3 computeLightParams()
@@ -288,7 +293,6 @@ vec3 computeLightParams()
 
 vec4 getPixelColor()
 {
-
 	//compute 
 	sceneVectors.NoL = dot(sceneVectors.N, sceneVectors.L);
 	sceneVectors.NoL = clamp( sceneVectors.NoL, 0.01, 0.99);
@@ -312,18 +316,18 @@ vec4 getPixelColor()
 	vec3 direct = computeDirect(f0, diffuseColor);
 
 	//IBL
-	vec3 IBL = computeIBL(f0, diffuseColor);
+	vec3 IBL = computeIBL(f0, diffuseColor) ;
 	
 	//Compute light properties
 	vec3 light_params = computeLightParams();
 
 	//modulate light 
-	vec3 light = (direct + IBL) * sceneVectors.NoL * light_params;
+	vec3 light = (direct + IBL) * sceneVectors.NoL * light_params ;
 
 	//apply to final pixel color
 	matProps.color.xyz = light;
 
-	return matProps.color + matProps.emissive;
+	return matProps.color;
 }
 
 void main()
@@ -339,12 +343,15 @@ void main()
 
 	p_color = getPixelColor();
 
-	//gamma
-	p_color.xyz = linear_to_gamma(p_color.xyz);
-
 	//tonemapping
 	p_color.xyz = toneMap(p_color.xyz);
 
-	gl_FragColor = p_color;
+	//apply extra textures
+	p_color = matProps.color + matProps.emissive;
+
+	//gamma
+	p_color.xyz = linear_to_gamma(p_color.xyz);
+
+	gl_FragColor = p_color ;
 
 }
