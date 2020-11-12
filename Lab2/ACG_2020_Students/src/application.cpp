@@ -48,30 +48,30 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 
 	// NODES
 	// Create a skyBox
-	SceneNode* node = new SceneNode("Scene node", SceneNode::CUBEMAP, skybox_texture);
+	SceneNode* node = new SceneNode("Scene node", SceneNode::CUBEMAP);
 	node_list.push_back(node);
 	node->model.setTranslation(camera->eye.x, camera->eye.y, camera->eye.z);
 	node->model.scale(50.0f, 50.0f, 50.0f);
 
 
 	// Create node and add it to the scene
-	//SceneNode* helmet = new SceneNode("Helmet", SceneNode::OBJECT, skybox_texture);
-	//node_list.push_back(helmet);
-	//helmet->model.setTranslation(-2.0f, -2.0f, -2.0f);
-	//helmet->model.scale(2.0f, 2.0f, 2.0f);
-	//helmet->mesh = Mesh::Get("data/models/helmet/helmet.obj");
-	//helmet->material->color_texture = Texture::Get("data/models/helmet/albedo.png");
-	//helmet->material->metalness_texture = Texture::Get("data/models/helmet/roughness.png"); //helmet modle has metalness inside roughness png
-	//helmet->material->roughness_texture = Texture::Get("data/models/helmet/roughness.png"); 
-	//helmet->material->normal_texture = Texture::Get("data/models/helmet/normal.png");
-	//helmet->material->emissive_texture = Texture::Get("data/models/helmet/emissive.png");
-	//helmet->material->ao_texture = Texture::Get("data/models/helmet/ao.png");
+	SceneNode* helmet = new SceneNode("Helmet", SceneNode::OBJECT);
+	node_list.push_back(helmet);
+	helmet->model.setTranslation(-2.0f, -2.0f, -2.0f);
+	helmet->model.scale(2.0f, 2.0f, 2.0f);
+	helmet->mesh = Mesh::Get("data/models/helmet/helmet.obj");
+	helmet->material->color_texture = Texture::Get("data/models/helmet/albedo.png");
+	helmet->material->roughness_texture = Texture::Get("data/models/helmet/roughness.png"); 
+	helmet->material->normal_texture = Texture::Get("data/models/helmet/normal.png");
+	helmet->material->emissive_texture = Texture::Get("data/models/helmet/emissive.png");
+	helmet->material->ao_texture = Texture::Get("data/models/helmet/ao.png");
+	helmet->material->metalness_in_roughness_texture = true;
 
 
 	// Create node and add it to the scene
-	SceneNode* lantern = new SceneNode("Lantern", SceneNode::OBJECT, skybox_texture);
+	SceneNode* lantern = new SceneNode("Lantern", SceneNode::OBJECT);
 	node_list.push_back(lantern);
-	lantern->model.setTranslation(-2.0f, -2.0f, -2.0f);
+	lantern->model.setTranslation(2.4f, -1.0f, -4.5f);
 	lantern->model.scale(0.05f, 0.05f, 0.05f);
 	lantern->mesh = Mesh::Get("data/models/lantern/lantern.obj");
 	lantern->material->color_texture = Texture::Get("data/models/lantern/albedo.png");
@@ -83,27 +83,29 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 
 
 	//Create node and add it to the scene
-	SceneNode* sphere = new SceneNode("Sphere", SceneNode::OBJECT, NULL);
+	SceneNode* sphere = new SceneNode("Sphere", SceneNode::OBJECT);
 	node_list.push_back(sphere);
 	sphere->model.setTranslation(3.0f, -2.0f, 0.0f);
 	sphere->mesh = Mesh::Get("data/meshes/sphere.obj");
 	sphere->material->setTex(Material::FACTORYWALL);
 	sphere->material->isSphere = TRUE;
 
-	// LIGHT
-	//Light* lightNode1 = new Light();
-	//model.setTranslation(-0.7f, 1.0f, 2.5f);
-	//model.scale(0.2f, 0.2f, 0.2f);
-	//lightNode1->model = model;
-	//lightNode1->Id = vec3(0.f, 1.f, 0.f);
-	//light_list.push_back(lightNode1);
+
+	// LIGHTS
+	Light* lightNode1 = new Light();
+	model.setTranslation(-2.7f, 1.0f, 2.5f);
+	model.scale(0.2f, 0.2f, 0.2f);
+	lightNode1->model = model;
+	lightNode1->color = vec3(0.f, 1.f, 0.f);
+	lightNode1->enable = false;
+	light_list.push_back(lightNode1);
 
 	Light* lightNode2 = new Light();
 	model.setTranslation(1.5f, 2.0f, 3.0f);
 	model.scale(0.2f, 0.2f, 0.2f);
 	lightNode2->model = model;
 	lightNode2->maxDist = 23.0f;
-	lightNode2->Is = vec3(1.f, 0.f, 0.f);
+	lightNode2->color = vec3(1.0f, 1.0f, 1.0f);
 	light_list.push_back(lightNode2);
 
 	setSkyTexture(Application::PANORAMA);
@@ -149,13 +151,9 @@ void Application::render(void)
 						glEnable(GL_BLEND);
 					}
 					if (node_list[j]->light) { // only objects that are afected by light will be rendered
-						if (first)
-							light_list[i]->hasAmbient = true;
 						node_list[j]->render(camera, light_list[i]);
 					} 
 					if (render_wireframe)
-						//if (first)
-							//light_list[i]->hasAmbient ;
 						node_list[j]->renderWireframe(camera);
 				}
 				first = false;
@@ -229,14 +227,7 @@ void Application::update(double seconds_elapsed)
 void Application::renderInMenu()
 {
 	bool changed = false;
-	//changed |= ImGui::Combo("Environment", (int*)&skyType, "CITY\0SNOW\0DRAGON\0PANORAMA\0STUDIO\0TV_STUDIO", 6);
 	changed |= ImGui::Combo("Environment", (int*)&skyType, "PANORAMA\0STUDIO\0TV_STUDIO", 3);
-	//if (changed && skyType == CITY)
-	//	setSkyTexture(CITY);
-	//else if (changed && skyType == SNOW)
-	//	setSkyTexture(SNOW);
-	//else if (changed && skyType == DRAGON)
-	//	setSkyTexture(DRAGON);
 	if (changed && skyType == PANORAMA)
 		setSkyTexture(PANORAMA);
 	else if (changed && skyType == STUDIO)
@@ -247,37 +238,18 @@ void Application::renderInMenu()
 
 void Application::setSkyTexture(eSkyTexture skyTexture)
 {
-	skyType = skyTexture;
-	unsigned int LEVEL = 0;
-
 	switch (skyTexture)
 	{
-	case CITY:
-		skybox_texture->cubemapFromImages("data/environments/city");
-		break;
-
-	case SNOW:
-		skybox_hdre = HDRE::Get("data/environments/studio.hdre");
-		skybox_texture->cubemapFromHDRE(skybox_hdre, LEVEL);
-		break;
-
-	case DRAGON:
-		skybox_texture->cubemapFromImages("data/environments/dragonvale");
-		break;
-
 	case PANORAMA:
 		skybox_hdre = HDRE::Get("data/environments/panorama.hdre");
-		skybox_texture->cubemapFromHDRE(skybox_hdre, LEVEL);
 		break;
 
 	case STUDIO:
 		skybox_hdre = HDRE::Get("data/environments/studio.hdre");
-		skybox_texture->cubemapFromHDRE(skybox_hdre, LEVEL);
 		break;
 
 	case TV_STUDIO:
 		skybox_hdre = HDRE::Get("data/environments/tv_studio.hdre");
-		skybox_texture->cubemapFromHDRE(skybox_hdre, LEVEL);
 		break;
 
 	default:

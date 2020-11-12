@@ -17,17 +17,13 @@ public:
 	~Light();
 
 	std::string name;
-	vec3 Ia;
-	vec3 Is;
-	vec3 Id;
-	vec3 ambient = vec3(1.0f, 1.0f, 1.0f);
+	vec3 color;
 	float maxDist;
-	float intensity = 1.0f;
+	float intensity;
 	Mesh* mesh = NULL;
 	Shader* shader = NULL;
 	Matrix44 model;
 	bool enable = true;
-	bool hasAmbient;
 	bool show_light = true;
 
 

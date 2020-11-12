@@ -12,7 +12,7 @@ SceneNode::SceneNode()
 }
 
 
-SceneNode::SceneNode(const char* name, eNodeType nodeType, Texture* texture)
+SceneNode::SceneNode(const char* name, eNodeType nodeType)
 {
 	this->name = name;
 	Mesh* mesh = new Mesh();
@@ -26,27 +26,13 @@ SceneNode::SceneNode(const char* name, eNodeType nodeType, Texture* texture)
 		this->mesh = mesh;
 		this->model.setScale(50.0f, 50.0f, 50.0f);
 		material->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/textureCube.fs");
-		material->color_texture = texture;
-		this->material = material;
-		break;
-
-	case REFLECT:
-		this->light = false;
-		material->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/reflect.fs");
-		material->color_texture = texture;
 		this->material = material;
 		break;
 
 	case OBJECT: 
-		material->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/PBR+IBL+.fs"); 
+		material->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/PBR+IBL.fs"); 
 		this->material = material;
 		break;
-
-	case BASIC:
-		material->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/PBR.fs");
-		this->material = material;
-		break;
-
 	default:
 		break;
 	}
@@ -82,7 +68,7 @@ void SceneNode::renderInMenu()
 {
 	ImGui::Checkbox("Enable", &enable);
 	//Model edit
-	if (nodeType == eNodeType::OBJECT || nodeType == eNodeType::REFLECT || nodeType == eNodeType::BASIC) {
+	if (nodeType == eNodeType::OBJECT) {
 		if (ImGui::TreeNode("Model"))
 		{
 			float matrixTranslation[3], matrixRotation[3], matrixScale[3];
@@ -94,14 +80,11 @@ void SceneNode::renderInMenu()
 
 			ImGui::TreePop();
 		}
-		if (nodeType == eNodeType::OBJECT || nodeType == eNodeType::BASIC) {
-			//Material
-			if (material && ImGui::TreeNode("Material"))
-			{
-				material->renderInMenu(material->isSphere);
-				ImGui::TreePop();
-			}
-			ImGui::Checkbox("Light", &light);
+		//Material
+		if (material && ImGui::TreeNode("Material"))
+		{
+			material->renderInMenu(material->isSphere);
+			ImGui::TreePop();
 		}
 	}
 }

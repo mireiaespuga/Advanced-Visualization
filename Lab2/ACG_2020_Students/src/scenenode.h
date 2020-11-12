@@ -11,11 +11,11 @@ class SceneNode {
 public:
 
 	static unsigned int lastNameId;
-	enum eNodeType { REFLECT, CUBEMAP, OBJECT, BASIC };
+	enum eNodeType { CUBEMAP, OBJECT };
 	eNodeType nodeType;
 
 	SceneNode();
-	SceneNode(const char* name, eNodeType nodeType, Texture* texture);
+	SceneNode(const char* name, eNodeType nodeType);
 	~SceneNode();
 
 	Material * material = NULL;
