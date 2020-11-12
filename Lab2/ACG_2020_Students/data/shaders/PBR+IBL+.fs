@@ -27,6 +27,7 @@ uniform float u_has_normal_texture;
 uniform float u_has_emissive_texture;
 uniform float u_has_opacity_texture;
 uniform float u_has_ao_texture;
+uniform float u_has_dispf_texture;
 
 uniform sampler2D u_color_texture;
 uniform sampler2D u_metalness_texture;
@@ -35,6 +36,7 @@ uniform sampler2D u_normal_texture;
 uniform sampler2D u_emissive_texture;
 uniform sampler2D u_opacity_texture;
 uniform sampler2D u_ao_texture;
+uniform sampler2D u_dispf_texture;
 uniform sampler2D u_texture_brdfLUT;
 
 // Levels of the HDR Environment to simulate roughness material
@@ -70,6 +72,8 @@ struct MatProps{
 	float roughness;
 	vec4 emissive;
 	vec4 color;
+	float displacement;  
+	vec3 normal_c;
 } matProps;
 
 mat3 cotangent_frame(vec3 N, vec3 p, vec2 uv){
@@ -171,26 +175,25 @@ vec3 getReflectionColor(vec3 r, float roughness)
 	else if(lod < 4.0) color = mix( textureCube(u_texture_prem_2, r), textureCube(u_texture_prem_3, r), lod - 3.0 );
 	else if(lod < 5.0) color = mix( textureCube(u_texture_prem_3, r), textureCube(u_texture_prem_4, r), lod - 4.0 );
 	else color = textureCube(u_texture_prem_4, r);
-	
-	color.rgb = gamma_to_linear(color.rgb);
-	// Any other computations in linear-space (examples)
-	// color *= u_exposure;
-	// color *= u_tintColor;
 
 	return color.rgb;
 }
 
-void setsceneVectors()
+void setsceneVectors(vec2 uv)
 {
 	//vector towards the eye (V)
-	sceneVectors.V = normalize( u_camera_position - v_world_position );
+	sceneVectors.V = normalize( u_camera_position - v_world_position + matProps.displacement );
 
 	//vector from the point to the light (L)
-	sceneVectors.L =  u_light_position - v_world_position;
+	sceneVectors.L =  u_light_position - v_world_position  + matProps.displacement;
 	sceneVectors.L = normalize(sceneVectors.L);
 
-	//normal vector at the point (N)
 	sceneVectors.N = normalize( v_normal );
+
+	//normal vector at the point (N)
+	if(u_has_normal_texture == 1.0){
+		sceneVectors.N = perturbNormal(sceneVectors.N, sceneVectors.V, uv, matProps.normal_c );
+	}
 
 	//half vector between V and L (H)
 	sceneVectors.H = normalize( sceneVectors.V  + sceneVectors.L );
@@ -230,6 +233,12 @@ void setMaterialProps(vec2 uv)
 		matProps.emissive= vec4(0.0);
 	}
 
+	if (u_has_dispf_texture == 1.0){
+		matProps.displacement= clamp(texture2D( u_dispf_texture, uv ).x, 0.0, 1.0);
+	}else{
+		matProps.displacement=1.0;
+	}
+
 	//Emissive to linear
 	matProps.emissive.rgb = gamma_to_linear(matProps.emissive.rgb);
 
@@ -246,8 +255,8 @@ void setMaterialProps(vec2 uv)
 	}
 
 	if (u_has_normal_texture == 1.0){
-		vec3 normal_c = texture2D( u_normal_texture, uv ).xyz;
-		sceneVectors.N = perturbNormal(sceneVectors.N, sceneVectors.V, uv, normal_c );
+		matProps.normal_c = texture2D( u_normal_texture, uv ).xyz;
+
 	}
 }
 
@@ -265,7 +274,6 @@ vec3 computeDirect(vec3 f0, vec3 diffuseColor)
 
 vec3 computeIBL(vec3 f0, vec3 diffuseColor)
 {
-	
 	//diffuse IBL
 	vec3 diffuseSample = getReflectionColor ( sceneVectors.R, matProps.roughness );
 	vec3 diffuseIBL = diffuseSample * diffuseColor;
@@ -277,7 +285,7 @@ vec3 computeIBL(vec3 f0, vec3 diffuseColor)
 	vec3 specularIBL = specularSample * SpecularBRDF;
 
 	//diffuse and specular terms from IBL
-	return (diffuseIBL + specularIBL);
+	return (diffuseIBL + specularIBL) * matProps.ambient_occlusion;
 }
 
 vec3 computeLightParams()
@@ -326,6 +334,7 @@ vec4 getPixelColor()
 
 	//apply to final pixel color
 	matProps.color.xyz = light;
+	matProps.color.a = matProps.opacity;
 
 	return matProps.color;
 }
@@ -335,14 +344,14 @@ void main()
 	vec2 uv = v_uv;
 	vec4 p_color;
 
-	//Set Vectors V L H N R
-	setsceneVectors();
-	
 	//set material properties from sampler2D textures
 	setMaterialProps(uv); 
 
-	p_color = getPixelColor();
+	//Set Vectors V L H N R
+	setsceneVectors(uv);
 
+	p_color = getPixelColor();
+	
 	//tonemapping
 	p_color.xyz = toneMap(p_color.xyz);
 

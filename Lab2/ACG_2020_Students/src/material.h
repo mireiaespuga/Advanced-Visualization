@@ -19,6 +19,7 @@ public:
 	Texture* emissive_texture = NULL;
 	Texture* ao_texture = NULL;
 	Texture* opacity_texture = NULL;
+	Texture* displacement_texture = NULL;
 
 	bool has_texture = false;
 	bool has_metalness_texture = false;
@@ -27,10 +28,10 @@ public:
 	bool has_emissive_texture = false;
 	bool has_ao_texture = false;
 	bool has_opacity_texture = false;
+	bool has_displacement_texture = false;
 
-	
-	Texture* texture_LUT = Texture::Get("data/textures/brdfLUT.png");;
-	
+	Texture* texture_LUT = Texture::Get("data/textures/brdfLUT.png");
+
 	Texture* texture_environment_0 = new Texture();
 	Texture* texture_environment_1 = new Texture();
 	Texture* texture_environment_2 = new Texture();

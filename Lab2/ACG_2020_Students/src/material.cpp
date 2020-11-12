@@ -73,6 +73,12 @@ void StandardMaterial::setUniforms(Camera* camera, Matrix44 model, Light* light 
 	}
 	else shader->setUniform("u_has_normal_texture", 0.0);
 
+	if (displacement_texture && has_displacement_texture) {
+		shader->setUniform("u_dispf_texture", displacement_texture, 15);
+		shader->setUniform("u_has_dispf_texture", 1.0);
+	}
+	else shader->setUniform("u_has_dispf_texture", 0.0);
+
 	if (emissive_texture && has_emissive_texture) {
 		shader->setUniform("u_emissive_texture", emissive_texture, 5);
 		shader->setUniform("u_has_emissive_texture", 1.0);
@@ -179,6 +185,7 @@ void StandardMaterial::setTex(eTexType texturetype)
 		normal_texture = Texture::Get("data/textures/factory_wall/sphere_normal.png");
 		ao_texture = Texture::Get("data/textures/factory_wall/sphere_ao.png");
 		metalness_texture = Texture::Get("data/textures/factory_wall/sphere_metalness.png");
+		displacement_texture = Texture::Get("data/textures/factory_wall/sphere_dispf.png");
 		isSphere = TRUE;
 		break;
 
@@ -187,6 +194,7 @@ void StandardMaterial::setTex(eTexType texturetype)
 		roughness_texture = Texture::Get("data/textures/mossy_rock/sphere_roughness.png");
 		normal_texture = Texture::Get("data/textures/mossy_rock/sphere_normal.png");
 		ao_texture = Texture::Get("data/textures/mossy_rock/sphere_ao.png");
+		displacement_texture = Texture::Get("data/textures/mossy_rock/sphere_dispf.png");
 		metalness_texture = NULL;
 		isSphere = TRUE;
 		break;
@@ -197,6 +205,7 @@ void StandardMaterial::setTex(eTexType texturetype)
 		normal_texture = Texture::Get("data/textures/marble/sphere_normal.png");
 		ao_texture = Texture::Get("data/textures/marble/sphere_ao.png");
 		metalness_texture = Texture::Get("data/textures/marble/sphere_metalness.png");
+		displacement_texture = Texture::Get("data/textures/marble/sphere_dispf.png");
 		isSphere = TRUE;
 		break;
 
@@ -243,6 +252,9 @@ void StandardMaterial::renderInMenu(bool basic=false)
 	}
 	if (normal_texture) {
 		ImGui::Checkbox("Enable normal texture", &has_normal_texture);
+	}
+	if (displacement_texture) {
+		ImGui::Checkbox("Enable displacement fields texture", &has_displacement_texture);
 	}
 	if (roughness_texture) {
 		ImGui::Checkbox("Enable roughness texture", &has_roughness_texture);
