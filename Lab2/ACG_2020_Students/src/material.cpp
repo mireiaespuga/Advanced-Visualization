@@ -184,7 +184,7 @@ void StandardMaterial::renderInMenu(bool basic=false)
 		ImGui::Checkbox("Enable normal texture", &has_normal_texture);
 	}
 	if (displacement_texture) {
-		ImGui::Checkbox("Enable displacement fields texture", &has_displacement_texture);
+		ImGui::Checkbox("Enable displacement texture", &has_displacement_texture);
 	}
 	if (roughness_texture) {
 		ImGui::Checkbox("Enable roughness texture", &has_roughness_texture);

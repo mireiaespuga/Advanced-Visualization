@@ -262,7 +262,6 @@ void setMaterialProps(vec2 uv)
 
 	if (u_has_normal_texture){
 		matProps.normal_c = texture2D( u_normal_texture, uv ).xyz;
-
 	}
 }
 
@@ -281,7 +280,7 @@ vec3 computeDirect(vec3 f0, vec3 diffuseColor)
 vec3 computeIBL(vec3 f0, vec3 diffuseColor)
 {
 	//diffuse IBL
-	vec3 diffuseSample = getReflectionColor ( sceneVectors.R, matProps.roughness );
+	vec3 diffuseSample = getReflectionColor ( sceneVectors.N, matProps.roughness );
 	vec3 diffuseIBL = diffuseSample * diffuseColor;
 
 	//specular IBL
