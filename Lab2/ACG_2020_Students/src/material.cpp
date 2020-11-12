@@ -46,15 +46,15 @@ void StandardMaterial::setUniforms(Camera* camera, Matrix44 model, Light* light 
 		shader->setUniform("u_texture_prem_4",environment.texture_environment_4, 5);
 	}
 
-	shader->setUniform("u_has_texture", has_texture ? 1.0 : 0.0);
-	shader->setUniform("u_has_roughness_texture", has_roughness_texture ? 1.0 : 0.0);
-	shader->setUniform("u_has_metalness_texture", has_metalness_texture ? 1.0 : 0.0);
-	shader->setUniform("u_metalness_in_roughness", metalness_in_roughness_texture ? 1.0 : 0.0);
-	shader->setUniform("u_has_normal_texture", has_normal_texture ? 1.0 : 0.0);
-	shader->setUniform("u_has_emissive_texture", has_emissive_texture ? 1.0 : 0.0);
-	shader->setUniform("u_has_ao_texture", has_ao_texture ? 1.0 : 0.0);
-	shader->setUniform("u_has_opacity_texture", has_opacity_texture ? 1.0 : 0.0);
-	shader->setUniform("u_has_dispf_texture", has_displacement_texture ? 1.0 : 0.0);
+	shader->setUniform("u_has_texture", has_texture);
+	shader->setUniform("u_has_roughness_texture", has_roughness_texture);
+	shader->setUniform("u_has_metalness_texture", has_metalness_texture);
+	shader->setUniform("u_metalness_in_roughness", metalness_in_roughness_texture);
+	shader->setUniform("u_has_normal_texture", has_normal_texture);
+	shader->setUniform("u_has_emissive_texture", has_emissive_texture);
+	shader->setUniform("u_has_ao_texture", has_ao_texture);
+	shader->setUniform("u_has_opacity_texture", has_opacity_texture);
+	shader->setUniform("u_has_dispf_texture", has_displacement_texture);
 
 	if (color_texture && has_texture) 
 		shader->setUniform("u_color_texture", color_texture, 6);

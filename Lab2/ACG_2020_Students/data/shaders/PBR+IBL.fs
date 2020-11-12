@@ -20,15 +20,15 @@ uniform float u_light_intensity;
 uniform float u_light_maxdist;
 
 // textures
-uniform float u_has_texture;
-uniform float u_has_metalness_texture;
-uniform float u_has_roughness_texture;
-uniform float u_has_normal_texture;
-uniform float u_has_emissive_texture;
-uniform float u_has_opacity_texture;
-uniform float u_has_ao_texture;
-uniform float u_has_dispf_texture;
-uniform float u_metalness_in_roughness;
+uniform bool u_has_texture;
+uniform bool u_has_metalness_texture;
+uniform bool u_has_roughness_texture;
+uniform bool u_has_normal_texture;
+uniform bool u_has_emissive_texture;
+uniform bool u_has_opacity_texture;
+uniform bool u_has_ao_texture;
+uniform bool u_has_dispf_texture;
+uniform bool u_metalness_in_roughness;
 
 uniform sampler2D u_color_texture;
 uniform sampler2D u_metalness_texture;
@@ -192,7 +192,7 @@ void setsceneVectors(vec2 uv)
 	sceneVectors.N = normalize( v_normal );
 
 	//normal vector at the point (N)
-	if(u_has_normal_texture == 1.0){
+	if(u_has_normal_texture){
 		sceneVectors.N = perturbNormal(sceneVectors.N, sceneVectors.V, uv, matProps.normal_c );
 	}
 
@@ -207,7 +207,7 @@ void setsceneVectors(vec2 uv)
 void setMaterialProps(vec2 uv)
 {
 
-	if (u_has_texture == 1.0) {
+	if (u_has_texture) {
 		matProps.color = u_color * texture2D( u_color_texture, uv );
 	} else {
 		matProps.color = u_color;
@@ -215,8 +215,8 @@ void setMaterialProps(vec2 uv)
 	
 	//Color to linear
 	matProps.color.rgb = gamma_to_linear(matProps.color.rgb);
-	if (u_has_metalness_texture == 1.0){
-		if(u_metalness_in_roughness == 0.0){ // if metalness has its own texture
+	if (u_has_metalness_texture){
+		if(!u_metalness_in_roughness){ // if metalness has its own texture
 			matProps.metalness = clamp(texture2D( u_metalness_texture, uv ).x, 0.01, 0.99);
 		}
 		else {
@@ -227,19 +227,19 @@ void setMaterialProps(vec2 uv)
 		matProps.metalness = u_metalness;
 	}
 
-	if (u_has_roughness_texture == 1.0){
+	if (u_has_roughness_texture){
 		matProps.roughness = clamp(texture2D( u_roughness_texture, uv ).x, 0.01, 0.99);
 	} else {
 		matProps.roughness = u_roughness;
 	}
 	
-	if (u_has_emissive_texture == 1.0){
+	if (u_has_emissive_texture){
 		matProps.emissive= texture2D( u_emissive_texture, uv );
 	}else{
 		matProps.emissive= vec4(0.0);
 	}
 
-	if (u_has_dispf_texture == 1.0){
+	if (u_has_dispf_texture){
 		matProps.displacement= clamp(texture2D( u_dispf_texture, uv ).x, 0.0, 1.0);
 	}else{
 		matProps.displacement=0.0;
@@ -248,19 +248,19 @@ void setMaterialProps(vec2 uv)
 	//Emissive to linear
 	matProps.emissive.rgb = gamma_to_linear(matProps.emissive.rgb);
 
-	if (u_has_opacity_texture == 1.0){
+	if (u_has_opacity_texture){
 		matProps.opacity = clamp(texture2D( u_opacity_texture, uv ).x, 0.0, 1.0);
 	}else{
 		matProps.opacity = 1.0;
 	}
 
-	if (u_has_ao_texture == 1.0){
+	if (u_has_ao_texture){
 		matProps.ambient_occlusion = clamp(texture2D( u_ao_texture, uv ).x, 0.01, 0.99);
 	}else{
 		matProps.ambient_occlusion = 1.0;
 	}
 
-	if (u_has_normal_texture == 1.0){
+	if (u_has_normal_texture){
 		matProps.normal_c = texture2D( u_normal_texture, uv ).xyz;
 
 	}

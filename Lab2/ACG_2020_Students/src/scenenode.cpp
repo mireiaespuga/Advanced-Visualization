@@ -30,7 +30,7 @@ SceneNode::SceneNode(const char* name, eNodeType nodeType)
 		break;
 
 	case OBJECT: 
-		material->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/PBR+IBL+.fs"); 
+		material->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/PBR+IBL.fs"); 
 		this->material = material;
 		break;
 	default:

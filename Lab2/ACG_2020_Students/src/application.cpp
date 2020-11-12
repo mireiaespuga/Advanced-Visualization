@@ -69,9 +69,9 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 
 
 	// Create node and add it to the scene
-	/*SceneNode* lantern = new SceneNode("Lantern", SceneNode::OBJECT);
+	SceneNode* lantern = new SceneNode("Lantern", SceneNode::OBJECT);
 	node_list.push_back(lantern);
-	lantern->model.setTranslation(-2.0f, -2.0f, -2.0f);
+	lantern->model.setTranslation(2.4f, -1.0f, -4.5f);
 	lantern->model.scale(0.05f, 0.05f, 0.05f);
 	lantern->mesh = Mesh::Get("data/models/lantern/lantern.obj");
 	lantern->material->color_texture = Texture::Get("data/models/lantern/albedo.png");
