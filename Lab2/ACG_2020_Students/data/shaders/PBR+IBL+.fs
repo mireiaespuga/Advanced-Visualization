@@ -236,7 +236,7 @@ void setMaterialProps(vec2 uv)
 	if (u_has_dispf_texture == 1.0){
 		matProps.displacement= clamp(texture2D( u_dispf_texture, uv ).x, 0.0, 1.0);
 	}else{
-		matProps.displacement=1.0;
+		matProps.displacement=0.0;
 	}
 
 	//Emissive to linear
