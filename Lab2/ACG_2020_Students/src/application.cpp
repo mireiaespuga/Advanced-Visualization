@@ -55,21 +55,21 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 
 
 	// Create node and add it to the scene
-	SceneNode* helmet = new SceneNode("Helmet", SceneNode::OBJECT, skybox_texture);
-	node_list.push_back(helmet);
-	helmet->model.setTranslation(-2.0f, -2.0f, -2.0f);
-	helmet->model.scale(2.0f, 2.0f, 2.0f);
-	helmet->mesh = Mesh::Get("data/models/helmet/helmet.obj");
-	helmet->material->color_texture = Texture::Get("data/models/helmet/albedo.png");
-	helmet->material->metalness_texture = Texture::Get("data/models/helmet/roughness.png"); //helmet modle has metalness inside roughness png
-	helmet->material->roughness_texture = Texture::Get("data/models/helmet/roughness.png"); 
-	helmet->material->normal_texture = Texture::Get("data/models/helmet/normal.png");
-	helmet->material->emissive_texture = Texture::Get("data/models/helmet/emissive.png");
-	helmet->material->ao_texture = Texture::Get("data/models/helmet/ao.png");
+	//SceneNode* helmet = new SceneNode("Helmet", SceneNode::OBJECT, skybox_texture);
+	//node_list.push_back(helmet);
+	//helmet->model.setTranslation(-2.0f, -2.0f, -2.0f);
+	//helmet->model.scale(2.0f, 2.0f, 2.0f);
+	//helmet->mesh = Mesh::Get("data/models/helmet/helmet.obj");
+	//helmet->material->color_texture = Texture::Get("data/models/helmet/albedo.png");
+	//helmet->material->metalness_texture = Texture::Get("data/models/helmet/roughness.png"); //helmet modle has metalness inside roughness png
+	//helmet->material->roughness_texture = Texture::Get("data/models/helmet/roughness.png"); 
+	//helmet->material->normal_texture = Texture::Get("data/models/helmet/normal.png");
+	//helmet->material->emissive_texture = Texture::Get("data/models/helmet/emissive.png");
+	//helmet->material->ao_texture = Texture::Get("data/models/helmet/ao.png");
 
 
 	// Create node and add it to the scene
-	/*SceneNode* lantern = new SceneNode("Lantern", SceneNode::OBJECT, skybox_texture);
+	SceneNode* lantern = new SceneNode("Lantern", SceneNode::OBJECT, skybox_texture);
 	node_list.push_back(lantern);
 	lantern->model.setTranslation(-2.0f, -2.0f, -2.0f);
 	lantern->model.scale(0.05f, 0.05f, 0.05f);
@@ -79,7 +79,7 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	lantern->material->roughness_texture = Texture::Get("data/models/lantern/roughness.png");
 	lantern->material->normal_texture = Texture::Get("data/models/lantern/normal.png");
 	lantern->material->opacity_texture = Texture::Get("data/models/lantern/opacity.png");
-	lantern->material->ao_texture = Texture::Get("data/models/lantern/ao.png");*/
+	lantern->material->ao_texture = Texture::Get("data/models/lantern/ao.png");
 
 
 	//Create node and add it to the scene
@@ -144,6 +144,10 @@ void Application::render(void)
 					glDepthFunc(GL_LEQUAL);
 				}
 				for (int j = 0; j < node_list.size(); j++) {
+					if (node_list[j]->material->has_opacity_texture == true) {
+						glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
+						glEnable(GL_BLEND);
+					}
 					if (node_list[j]->light) { // only objects that are afected by light will be rendered
 						if (first)
 							light_list[i]->hasAmbient = true;
