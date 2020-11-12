@@ -38,7 +38,7 @@ void StandardMaterial::setUniforms(Camera* camera, Matrix44 model, Light* light 
 	shader->setUniform("u_roughness", roughness);
 
 	if (environment.texture_environment) {
-		shader->setUniform("u_texture", environment.texture_environment, 0);
+		shader->setUniform("u_texture", environment.texture_environment, 15);
 		shader->setUniform("u_texture_prem_0",environment.texture_environment_0, 1);
 		shader->setUniform("u_texture_prem_1",environment.texture_environment_1, 2);
 		shader->setUniform("u_texture_prem_2",environment.texture_environment_2, 3);
