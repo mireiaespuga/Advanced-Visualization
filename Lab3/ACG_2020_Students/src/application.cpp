@@ -54,8 +54,19 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	node->mesh = mesh;
 
 	// Set material
-	StandardMaterial* material = new StandardMaterial();
-	material->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/flat.fs");
+	//StandardMaterial* material = new StandardMaterial();
+	//material->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/flat.fs");
+	//node->material = material;
+
+	VolumeMaterial* material = new VolumeMaterial();
+	material->shader = Shader::Get("data/shaders/basic.vs", "data/shaders/raymarching.fs");
+
+	Volume* volume = new Volume();
+	volume->loadPVM("data/volumes/CT-Abdomen.pvm");
+	
+	Texture* texture = new Texture();
+	texture->create3DFromVolume(volume);
+	material->texture = texture;
 	node->material = material;
 	
 	//hide the cursor
