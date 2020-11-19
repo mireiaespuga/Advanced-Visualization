@@ -29,6 +29,19 @@ public:
 	void renderInMenu();
 };
 
+class VolumeMaterial : public StandardMaterial {
+public:
+
+	VolumeMaterial();
+	~VolumeMaterial();
+
+	float zComponent;
+
+	void render(Mesh* mesh, Matrix44 model, Camera* camera);
+	void renderInMenu();
+	void setUniforms(Camera* camera, Matrix44 model);
+};
+
 class WireframeMaterial : public StandardMaterial {
 public:
 

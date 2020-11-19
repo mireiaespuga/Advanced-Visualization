@@ -54,6 +54,25 @@ void StandardMaterial::renderInMenu()
 	ImGui::ColorEdit3("Color", (float*)&color); // Edit 3 floats representing a color
 }
 
+void VolumeMaterial::renderInMenu() {
+	ImGui::SliderFloat("z-depth", &zComponent, 0.0f, 100.0f); // Edit float representing z component
+}
+
+void VolumeMaterial::setUniforms(Camera* camera, Matrix44 model)
+{
+	//upload node uniforms
+	shader->setUniform("u_viewprojection", camera->viewprojection_matrix);
+	shader->setUniform("u_camera_position", camera->eye);
+	shader->setUniform("u_model", model);
+	shader->setUniform("u_time", Application::instance->time);
+	shader->setUniform("u_z_coord", zComponent);
+
+	shader->setUniform("u_color", color);
+
+	if (texture)
+		shader->setUniform("u_texture", texture);
+}
+
 WireframeMaterial::WireframeMaterial()
 {
 	color = vec4(1.f, 1.f, 1.f, 1.f);
