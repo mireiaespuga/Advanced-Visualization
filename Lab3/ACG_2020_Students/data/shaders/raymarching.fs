@@ -6,10 +6,13 @@ varying vec2 v_uv;
 varying vec4 v_color;
 
 uniform vec4 u_color;
-uniform float u_z_coord;
 uniform vec3 u_camera_position;
 uniform sampler3D u_texture;
 uniform float u_time;
+uniform mat4 u_viewprojection;
+uniform int u_text_width;
+uniform int u_text_height;
+uniform float u_z_coord;
 
 struct rayProperties{
 	vec4 rayDirection;
@@ -18,57 +21,59 @@ struct rayProperties{
 	vec3 stepVector;
 }rayprops;
 
+
 void raySetup(){
-	//First sample
-		//- Step vector
-		//- Final color = 0
+
+	vec4 coord2d = vec4(u_text_width, u_text_height, u_z_coord, 1.0);
+	Matrix44 inverse_vp = u_viewprojection.inverse(); 
 	
-	rayprops.rayDirection = normalize(v_position - u_camera_position);
+	//project 2d coord into 3d
+	vec4 p_4d = inverse_vp * coord2d;
+
+	//we convert to homogenous 
+	vec3 p_position3d = vec3(p_4d.x/p_4d.w, p_4d.y/p_4d.w, p_4d.z/p_4d.w);
+
+	rayprops.rayDirection = normalize(p_position3d - u_camera_position);
 	rayprops.stepVector = rayprops.rayStep * rayprops.rayDirection;
 
 }
 
-void rayLoop(){
+vec4 rayLoop(){
 
-	vec4 color_acc;
-	vec4 color_i;
-	vec3 current_sample = v_position; 
-	float max_steps = 1000;
+	int max_steps = 1000;
+	vec4 finalColor = vec4(0.0);
 
-	for( int i=0; i<max_steps; i+=1){
-
+	vec3 current_sample = u_camera_position; //ray_start
 	
-	// volume sampling _> sample value
-	// classification -> sample color
-	//Composition -> finalColor += rayprops.rayStep * (1 - finalColor.a) * sampleColor;
-	//next sample & early termination
-	//Make a step on in the ray direction.
-		current_sample = current_sample + rayprops.stepVector;
+	for( int i=0; i<max_steps; i+=1){
+	
+		// volume sampling _> sample value
+		float d = texture(u_texture, current_sample).x;
+		
+		// classification -> sample 
+		vec4 sample_color = vec4(d,d,d,d);
+
+		//Composition
+		finalColor += rayprops.rayStep * (1 - finalColor.a) * sample_color;
+
+		//Make a step on in the ray direction.
+		current_sample += rayprops.stepVector;
 
 		//Exit conditions
-		if( 	current_sample.x < -1 || current_sample.x > 1 ||
-				current_sample.y < -1 || current_sample.y > 1 ||
-				current_sample.z < -1 || current_sample.z > 1 || color_acc.a > 0.95){
+		if( current_sample.x < -1 || current_sample.x > 1 || current_sample.y < -1 || current_sample.y > 1 || current_sample.z < -1 || current_sample.z > 1 || finalColor.a > 0.95){
 			break;
 		}
 
 	}	
 
-
-	
-	//finish
+	return finalColor;
 }
 
 void main()
 {
-	vec3 texture_coords;
-	//Ray direction (between 2 points)
-	float d = texture(u_texture, texture_coords).x;
-	//Ray step (small length)
+	raySetup();
 
-	//Sample pos (initialized as entry point to the volume)
-
-	//Final color
-	vec2 uv = v_uv;
-	gl_FragColor = u_color * texture2D( u_texture, uv );
+	vec4 finalColor = rayLoop();
+	
+	gl_FragColor = finalColor;
 }
