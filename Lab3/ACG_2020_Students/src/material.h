@@ -36,6 +36,7 @@ public:
 	~VolumeMaterial();
 
 	float zComponent;
+	float stepLength;
 
 	void render(Mesh* mesh, Matrix44 model, Camera* camera);
 	void renderInMenu();
