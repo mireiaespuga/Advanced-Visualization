@@ -79,7 +79,7 @@ void VolumeMaterial::setUniforms(Camera* camera, Matrix44 model)
 	shader->setUniform("u_z_coord", zComponent);
 	shader->setUniform("u_text_height", texture->height);
 	shader->setUniform("u_text_width", texture->width);
-	
+	shader->setUniform("u_text_depth", texture->depth);
 
 	shader->setUniform("u_color", color);
 

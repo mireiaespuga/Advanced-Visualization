@@ -12,23 +12,23 @@ uniform float u_time;
 uniform mat4 u_viewprojection;
 uniform int u_text_width;
 uniform int u_text_height;
+uniform int u_text_depth;
 uniform float u_z_coord;
 
 struct rayProperties{
-	vec4 rayDirection;
+	vec3 rayDirection;
 	float rayStep;
-	vec3 rayVector;
 	vec3 stepVector;
 }rayprops;
 
 
 void raySetup(){
 
-	vec4 coord2d = vec4(u_text_width, u_text_height, u_z_coord, 1.0);
-	Matrix44 inverse_vp = u_viewprojection.inverse(); 
+	vec4 coord2d = vec4(u_text_width, u_text_height, u_z_coord+u_text_depth, 1.0);
+	mat4 inverse_vp = inverse(u_viewprojection); 
 	
 	//project 2d coord into 3d
-	vec4 p_4d = inverse_vp * coord2d;
+	vec4 p_4d = coord2d * inverse_vp;
 
 	//we convert to homogenous 
 	vec3 p_position3d = vec3(p_4d.x/p_4d.w, p_4d.y/p_4d.w, p_4d.z/p_4d.w);
