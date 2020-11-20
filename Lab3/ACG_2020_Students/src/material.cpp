@@ -56,6 +56,8 @@ void StandardMaterial::renderInMenu()
 
 VolumeMaterial::VolumeMaterial()
 {
+	zComponent = 0.0;
+	stepLength = 0.1;
 	color = vec4(1.f, 1.f, 1.f, 1.f);
 	shader = Shader::Get("data/shaders/basic.vs", "data/shaders/flat.fs");
 }
@@ -66,7 +68,8 @@ VolumeMaterial::~VolumeMaterial()
 }
 
 void VolumeMaterial::renderInMenu() {
-	ImGui::SliderFloat("z-depth", &zComponent, 0.0f, 100.0f); // Edit float representing z component
+	//ImGui::SliderFloat("z-depth", &zComponent, -3.0f, 3.0f); // Edit float representing z component
+	ImGui::SliderFloat("Step length", &stepLength, 0.01f, 1.0f); // Edit float representing z component
 }
 
 void VolumeMaterial::setUniforms(Camera* camera, Matrix44 model)
@@ -80,7 +83,7 @@ void VolumeMaterial::setUniforms(Camera* camera, Matrix44 model)
 	shader->setUniform("u_text_height", texture->height);
 	shader->setUniform("u_text_width", texture->width);
 	shader->setUniform("u_text_depth", texture->depth);
-
+	shader->setUniform("u_step", stepLength);
 	shader->setUniform("u_color", color);
 
 	if (texture)
