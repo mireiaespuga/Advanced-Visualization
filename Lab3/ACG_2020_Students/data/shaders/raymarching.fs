@@ -15,6 +15,7 @@ uniform float u_text_width;
 uniform float u_text_height;
 uniform float u_text_depth;
 uniform float u_step;
+uniform sampler2D u_noise_texture;
 //uniform float u_z_coord;
 
 struct rayProperties{
@@ -44,7 +45,8 @@ vec4 rayLoop(){
 	int max_steps = 1000;
 	vec4 finalColor = vec4(0.0);
 
-	vec3 current_sample = vec3(v_position.x, v_position.y, v_position.z); //ray_start
+	float random_offset = texture2D( u_noise_texture, gl_FragCoord.xy * 0.005).x;
+	vec3 current_sample = vec3(v_position.x, v_position.y, v_position.z) + random_offset * rayprops.rayDirection ; //ray_start
 	current_sample = to01range(current_sample);
 
 	for( int i=1; i<=max_steps; i+=1){

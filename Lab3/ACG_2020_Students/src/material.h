@@ -37,6 +37,7 @@ public:
 
 	float zComponent;
 	float stepLength;
+	Texture* noise_texture = NULL;
 
 	void render(Mesh* mesh, Matrix44 model, Camera* camera);
 	void renderInMenu();

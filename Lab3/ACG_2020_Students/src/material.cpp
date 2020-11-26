@@ -80,14 +80,12 @@ void VolumeMaterial::setUniforms(Camera* camera, Matrix44 model)
 	shader->setUniform("u_model", model);
 	shader->setUniform("u_time", Application::instance->time);
 	shader->setUniform("u_z_coord", zComponent);
-	shader->setUniform("u_text_height", texture->height);
-	shader->setUniform("u_text_width", texture->width);
-	shader->setUniform("u_text_depth", texture->depth);
 	shader->setUniform("u_step", stepLength);
 	shader->setUniform("u_color", color);
+	shader->setUniform("u_noise_texture", noise_texture, 1);
 
 	if (texture)
-		shader->setUniform("u_texture", texture);
+		shader->setUniform("u_texture", texture, 2);
 }
 
 void VolumeMaterial::render(Mesh* mesh, Matrix44 model, Camera* camera)
