@@ -60,6 +60,8 @@ VolumeMaterial::VolumeMaterial()
 	stepLength = 0.1;
 	color = vec4(1.f, 1.f, 1.f, 1.f);
 	shader = Shader::Get("data/shaders/basic.vs", "data/shaders/flat.fs");
+	threshold = 0.0;
+	h = 0.01;
 }
 
 VolumeMaterial::~VolumeMaterial()
@@ -68,8 +70,9 @@ VolumeMaterial::~VolumeMaterial()
 }
 
 void VolumeMaterial::renderInMenu() {
-	//ImGui::SliderFloat("z-depth", &zComponent, -3.0f, 3.0f); // Edit float representing z component
-	ImGui::SliderFloat("Step length", &stepLength, 0.01f, 1.0f); // Edit float representing z component
+	ImGui::SliderFloat("Threshold", &threshold, 0.0f, 1.0f); // Edit float representing density thresh
+	ImGui::SliderFloat("Step length", &stepLength, 0.01f, 1.0f); // Edit float representing step-length
+	ImGui::SliderFloat("H", &h, 0.001f, 1.0f); // Edit float representing step-length
 }
 
 void VolumeMaterial::setUniforms(Camera* camera, Matrix44 model)
@@ -83,6 +86,10 @@ void VolumeMaterial::setUniforms(Camera* camera, Matrix44 model)
 	shader->setUniform("u_step", stepLength);
 	shader->setUniform("u_color", color);
 	shader->setUniform("u_noise_texture", noise_texture, 1);
+	shader->setUniform("u_thr", threshold);
+	shader->setUniform("Id", vec3(1.f, 1.f, 1.f));
+	shader->setUniform("Kd", vec3(1.f, 1.f, 1.f));
+	shader->setUniform("u_h", h);
 
 	if (texture)
 		shader->setUniform("u_texture", texture, 2);
