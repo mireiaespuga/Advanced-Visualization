@@ -68,6 +68,7 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	texture->create3DFromVolume(volume);
 	material->texture = texture;
 	material->noise_texture = Texture::Get("data/textures/blueNoise.png");
+	material->lut_texture = Texture::Get("data/textures/LUT.png");
 	node->material = material;
 	
 	//hide the cursor

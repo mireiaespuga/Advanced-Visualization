@@ -37,9 +37,13 @@ public:
 
 	float zComponent;
 	float stepLength;
-	float threshold;
+	float threshold = 1.0;
+	float threshold_red;
+	float threshold_green;
+	vec3 light_position;
 	float h;
 	Texture* noise_texture = NULL;
+	Texture* lut_texture = NULL;
 
 	void render(Mesh* mesh, Matrix44 model, Camera* camera);
 	void renderInMenu();
