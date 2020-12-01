@@ -48,18 +48,35 @@ vec4 rayLoop(){
 	float random_offset = texture2D( u_noise_texture, gl_FragCoord.xy * 0.005).x;
 	vec3 current_sample = vec3(v_position.x, v_position.y, v_position.z) + random_offset * rayprops.rayDirection ; //ray_start
 	current_sample = to01range(current_sample);
-
 	for( int i=1; i<=max_steps; i+=1){
 	
 		// volume sampling
-		float d = texture3D(u_texture, current_sample).x;
+		float d = texture3D(u_texture, vec3( current_sample.x, current_sample.y, current_sample.z)).x;
 		
 		// classification
 		vec4 sample_color = vec4(d,d,d,d);
-
+		
+		if (d < 0.3){
+			sample_color = vec4(1,0,0,d);
+			//finalColor.a = 0.7;
+		}else if (d < 0.5){
+			sample_color = vec4(0,1,0,d);
+			//finalColor.a = 0.1;
+		}else{
+			sample_color = vec4(1,1,1,d);
+			//finalColor.a = 0.1;
+		}
+		sample_color.rgb *= sample_color.a;
 		//Composition
-		finalColor += rayprops.rayStep * (1 - finalColor.a) * sample_color;
-
+		//Opcio 1
+		finalColor += rayprops.rayStep * (1.0 - finalColor.a) *sample_color;
+		//Opcio 2
+		//finalColor.rgb +=  sample_color.rgb * sample_color.a + (1 - sample_color.a) *finalColor.rgb;
+		//finalColor.a +=  sample_color.a + (1.0f - sample_color.a)*finalColor.a;    
+		//Opcio 3
+		//finalColor.rgb += rayprops.rayStep *( sample_color.rgb * sample_color.a + (1 - sample_color.a) *finalColor.rgb);
+		//finalColor.a = (sample_color.a + (1.0f - sample_color.a)*finalColor.a);
+       
 		//Make a step on in the ray direction.
 		current_sample += rayprops.stepVector;
 
