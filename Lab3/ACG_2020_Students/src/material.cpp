@@ -71,6 +71,9 @@ VolumeMaterial::~VolumeMaterial()
 
 void VolumeMaterial::renderInMenu() {
 	ImGui::SliderFloat("Threshold", &threshold, 0.0f, 1.0f); // Edit float representing density thresh
+	ImGui::SliderFloat("Threshold_red", &threshold_red, 0.2f, 0.3f); // Edit float representing density thresh
+	ImGui::SliderFloat("Threshold_green", &threshold_green, 0.2f, 0.3f); // Edit float representing density thresh
+	ImGui::SliderFloat3("light_position", (float*)&light_position, 0.0f, 0.1f);
 	ImGui::SliderFloat("Step length", &stepLength, 0.01f, 1.0f); // Edit float representing step-length
 	ImGui::SliderFloat("H", &h, 0.001f, 1.0f); // Edit float representing step-length
 }
@@ -86,9 +89,14 @@ void VolumeMaterial::setUniforms(Camera* camera, Matrix44 model)
 	shader->setUniform("u_step", stepLength);
 	shader->setUniform("u_color", color);
 	shader->setUniform("u_noise_texture", noise_texture, 1);
+	shader->setUniform("u_lut_texture", lut_texture, 3);
 	shader->setUniform("u_thr", threshold);
+	shader->setUniform("u_thr_red", 0.237);
+	shader->setUniform("u_thr_green", 0.3);
 	shader->setUniform("Id", vec3(1.f, 1.f, 1.f));
 	shader->setUniform("Kd", vec3(1.f, 1.f, 1.f));
+	shader->setUniform("u_light_position", light_position);
+	
 	shader->setUniform("u_h", h);
 
 	if (texture)

@@ -5,20 +5,21 @@ varying vec2 v_uv;
 varying vec4 v_color;
 
 uniform float u_thr;
+uniform float u_thr_red;
+uniform float u_thr_green;
 uniform vec4 u_color;
 uniform vec3 u_camera_position;
 uniform sampler3D u_texture;
 uniform float u_time;
 uniform mat4 u_viewprojection;
 uniform mat4 u_model;
-uniform float u_text_width;
-uniform float u_text_height;
-uniform float u_text_depth;
 uniform float u_step;
 uniform float u_h;
 uniform sampler2D u_noise_texture;
+uniform sampler2D u_lut_texture;
 uniform vec3 Id;
 uniform vec3 Kd;
+uniform vec3 u_light_position;
 //uniform float u_z_coord;
 
 struct rayProperties{
@@ -51,7 +52,7 @@ void setGradient(vec3 pos){
 	float g_x = sample_volume(pos.x+u_h, pos.y, pos.z) - sample_volume(pos.x-u_h, pos.y, pos.z);
 	float g_y = sample_volume(pos.x, pos.y+u_h, pos.z) - sample_volume(pos.x, pos.y-u_h, pos.z);
 	float g_z = sample_volume(pos.x, pos.y, pos.z+u_h) - sample_volume(pos.x, pos.y, pos.z-u_h);
-	rayprops.gradientN = 0.5 * u_h * vec3(g_x, g_y, g_z);
+	rayprops.gradientN = vec3(g_x, g_y, g_z) / (2.0 * u_h);
 }
 
 vec4 rayLoop(){
@@ -71,36 +72,40 @@ vec4 rayLoop(){
 		
 		// classification
 		vec4 sample_color = vec4(d,d,d,d);
+
+		sample_color.xyz = texture2D( u_lut_texture, vec2(d, 1.0)).xyz;
 		
-		if (d < 0.3){
-			sample_color = vec4(1,0,0,d);
+		//if (d < u_thr_red){
+			//sample_color = vec4(1,0,0,d);
 			//finalColor.a = 0.7;
-		}else if (d < 0.5){
-			sample_color = vec4(0,1,0,d);
+		//}else if (d < u_thr_green){
+			//sample_color = vec4(0,1,0,d);
 			//finalColor.a = 0.1;
-		}else{
-			sample_color = vec4(1,1,1,d);
+		//}else{
+			//sample_color = vec4(1,1,1,d);
 			//finalColor.a = 0.1;
-		}
+		//}
 
 		sample_color.rgb *= sample_color.a;
 
 		if(d > u_thr){
 			finalColor.a = 1.0;
 
+			vec3 L = normalize(u_light_position - v_world_position);
+			L =  to01range(L);
 			setGradient(current_sample);
 
 			rayprops.gradientN = to01range(rayprops.gradientN);
 			//light cannot be negative (but the dot product can)
-			vec3 L = normalize(u_camera_position - current_sample);
+			//vec3 L = normalize(u_camera_position - current_sample);
 			float NdotL = dot(rayprops.gradientN, L);
-			//NdotL = clamp( NdotL, 0.0, 1.0 );
+			NdotL = clamp( NdotL, 0.0, 1.0 );
 
 			//store the amount of diffuse light
-			Ip += Kd * NdotL * Id;
+			//Ip += Kd * NdotL * Id;
 			
 			finalColor += sample_color * (1 - finalColor.a);
-			finalColor.xyz *= Ip;
+			finalColor.xyz *= NdotL;
 
 		}else{
 			finalColor += rayprops.rayStep * (1.0 - finalColor.a) * sample_color;
