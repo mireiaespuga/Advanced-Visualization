@@ -37,6 +37,8 @@ public:
 
 	float zComponent;
 	float stepLength;
+	float threshold;
+	float h;
 	Texture* noise_texture = NULL;
 
 	void render(Mesh* mesh, Matrix44 model, Camera* camera);
