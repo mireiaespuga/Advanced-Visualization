@@ -110,7 +110,7 @@ vec4 rayLoop(){
 
 		//Composition
 		//Opcio 1
-		finalColor += rayprops.rayStep * (1.0 - finalColor.a) *sample_color;
+		//finalColor += rayprops.rayStep * (1.0 - finalColor.a) *sample_color;
 		//Opcio 2
 		//finalColor.rgb +=  sample_color.rgb * sample_color.a + (1 - sample_color.a) *finalColor.rgb;
 		//finalColor.a +=  sample_color.a + (1.0f - sample_color.a)*finalColor.a;    
