@@ -67,6 +67,7 @@ vec4 rayLoop(){
 	
 		// volume sampling
 		float d = sample_volume(current_sample.x, current_sample.y, current_sample.z);
+
 		
 		// classification
 		vec4 sample_color = vec4(d,d,d,d);
@@ -105,6 +106,7 @@ vec4 rayLoop(){
 			finalColor += rayprops.rayStep * (1.0 - finalColor.a) * sample_color;
 		}
 		
+
 
 		//Composition
 		//Opcio 1
