@@ -38,10 +38,9 @@ public:
 	float zComponent;
 	float stepLength;
 	float threshold = 1.0;
-	float threshold_red;
-	float threshold_green;
-	vec3 light_position;
 	float h;
+	vec4 plane1;
+	vec4 plane2;
 	Texture* noise_texture = NULL;
 	Texture* lut_texture = NULL;
 
