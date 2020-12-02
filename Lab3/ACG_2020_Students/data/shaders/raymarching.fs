@@ -15,8 +15,8 @@ uniform float u_step;
 uniform float u_h;
 uniform sampler2D u_noise_texture;
 uniform sampler2D u_lut_texture;
-uniform vec4 plane;
-uniform vec4 plane2;
+uniform vec4 u_plane1;
+uniform vec4 u_plane2;
 
 struct rayProperties{
 	vec3 rayDirection;
@@ -62,10 +62,10 @@ vec4 rayLoop(){
 
 	for( int i=1; i<=max_steps; i+=1){
 	
-		float nose = plane.x*current_sample.x + plane.y*current_sample.y + plane.z*current_sample.z + plane.w;
-		float nose2 = plane2.x*current_sample.x + plane2.y*current_sample.y + plane2.z*current_sample.z + plane2.w;
+		float volClip1 = u_plane1.x*current_sample.x + u_plane1.y*current_sample.y + u_plane1.z*current_sample.z + u_plane1.w;
+		float volClip2 = u_plane2.x*current_sample.x + u_plane2.y*current_sample.y + u_plane2.z*current_sample.z + u_plane2.w;
 
-		if(nose>0 || nose2>0){
+		if(volClip1>0 || volClip2>0){
 			continue;
 		}
 
