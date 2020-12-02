@@ -63,6 +63,10 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 
 	Volume* volume = new Volume();
 	volume->loadPVM("data/volumes/CT-Abdomen.pvm");
+
+	//scaling the volume
+	float max_range = max(volume->widthSpacing * volume->width, volume->heightSpacing * volume->height, volume->depthSpacing * volume->depth);
+	node->model.setScale(1/ max_range * volume->widthSpacing * volume->width, 1 / max_range * volume->heightSpacing * volume->height, 1 / max_range * volume->depthSpacing * volume->depth);
 	
 	Texture* texture = new Texture();
 	texture->create3DFromVolume(volume);
@@ -70,6 +74,8 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	material->noise_texture = Texture::Get("data/textures/blueNoise.png");
 	material->lut_texture = Texture::Get("data/textures/LUT.png");
 	node->material = material;
+	
+
 	
 	//hide the cursor
 	SDL_ShowCursor(!mouse_locked); //hide or show the mouse
