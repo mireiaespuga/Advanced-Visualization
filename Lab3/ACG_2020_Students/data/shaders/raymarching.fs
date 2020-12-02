@@ -5,8 +5,6 @@ varying vec2 v_uv;
 varying vec4 v_color;
 
 uniform float u_thr;
-uniform float u_thr_red;
-uniform float u_thr_green;
 uniform vec4 u_color;
 uniform vec3 u_camera_position;
 uniform sampler3D u_texture;
@@ -57,71 +55,39 @@ void setGradient(vec3 pos){
 
 vec4 rayLoop(){
 
-	vec3 Ip = vec3(0.0);
 	int max_steps = 1000;
 	vec4 finalColor = vec4(0.0);
 
 	float random_offset = texture2D( u_noise_texture, gl_FragCoord.xy * 0.005).x;
 	vec3 current_sample = vec3(v_position.x, v_position.y, v_position.z) + random_offset * rayprops.rayDirection ; //ray_start
 	current_sample = to01range(current_sample);
+
 	for( int i=1; i<=max_steps; i+=1){
 	
 		// volume sampling
 		float d = sample_volume(current_sample.x, current_sample.y, current_sample.z);
 
-		
 		// classification
 		vec4 sample_color = vec4(d,d,d,d);
-
-		sample_color.xyz = texture2D( u_lut_texture, vec2(d, 1.0)).xyz;
-		
-		//if (d < u_thr_red){
-			//sample_color = vec4(1,0,0,d);
-			//finalColor.a = 0.7;
-		//}else if (d < u_thr_green){
-			//sample_color = vec4(0,1,0,d);
-			//finalColor.a = 0.1;
-		//}else{
-			//sample_color = vec4(1,1,1,d);
-			//finalColor.a = 0.1;
-		//}
-
+		sample_color.xyz = texture2D(u_lut_texture, vec2(d, 1.0)).xyz;
 		sample_color.rgb *= sample_color.a;
 
+		//Composition
 		if(d > u_thr){
-			finalColor.a = 1.0;
-
-			vec3 L = normalize(u_light_position - v_world_position);
+			vec3 L = normalize(u_camera_position - v_world_position);
 			L =  to01range(L);
 			setGradient(current_sample);
 
 			rayprops.gradientN = to01range(rayprops.gradientN);
-			//light cannot be negative (but the dot product can)
-			//vec3 L = normalize(u_camera_position - current_sample);
 			float NdotL = dot(rayprops.gradientN, L);
-			NdotL = clamp( NdotL, 0.0, 1.0 );
+			NdotL = (NdotL + 1.0) / 2.0;
 
-			//store the amount of diffuse light
-			//Ip += Kd * NdotL * Id;
-			
-			finalColor += sample_color * (1 - finalColor.a);
-			finalColor.xyz *= NdotL;
+			finalColor.rgb += sample_color.rgb * NdotL * (1.0 - finalColor.a); //1-alfa es transmissivitat si es os no passa color pq l'os no deixa passar color
+			finalColor.a = 1.0;
 
 		}else{
 			finalColor += rayprops.rayStep * (1.0 - finalColor.a) * sample_color;
 		}
-		
-
-
-		//Composition
-		//Opcio 1
-		//finalColor += rayprops.rayStep * (1.0 - finalColor.a) *sample_color;
-		//Opcio 2
-		//finalColor.rgb +=  sample_color.rgb * sample_color.a + (1 - sample_color.a) *finalColor.rgb;
-		//finalColor.a +=  sample_color.a + (1.0f - sample_color.a)*finalColor.a;    
-		//Opcio 3
-		//finalColor.rgb += rayprops.rayStep *( sample_color.rgb * sample_color.a + (1 - sample_color.a) *finalColor.rgb);
-		//finalColor.a = (sample_color.a + (1.0f - sample_color.a)*finalColor.a);
        
 		//Make a step on in the ray direction.
 		current_sample += rayprops.stepVector;
