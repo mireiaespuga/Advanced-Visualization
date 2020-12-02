@@ -35,10 +35,12 @@ public:
 	VolumeMaterial();
 	~VolumeMaterial();
 
-	float zComponent;
 	float stepLength;
-	float threshold = 1.0;
+	float threshold;
 	float h;
+	bool applyJittering;
+	bool applyVolumeClipping;
+	bool applyTransferFunction;
 	vec4 plane1;
 	vec4 plane2;
 	Texture* noise_texture = NULL;

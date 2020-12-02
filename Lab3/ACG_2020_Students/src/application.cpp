@@ -71,7 +71,7 @@ Application::Application(int window_width, int window_height, SDL_Window* window
 	Texture* texture = new Texture();
 	texture->create3DFromVolume(volume);
 	material->texture = texture;
-	material->noise_texture = Texture::Get("data/textures/blueNoise.png");
+	material->noise_texture = Texture::Get("data/textures/noise2.png");
 	material->lut_texture = Texture::Get("data/textures/LUT.png");
 	node->material = material;
 	
