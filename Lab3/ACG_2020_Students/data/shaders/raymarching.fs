@@ -104,9 +104,10 @@ vec4 rayLoop(){
 			finalColor.rgb += (1.0 - finalColor.a) * sample_color.rgb * NdotL; //1-alfa es transmissivitat si es os no passa color pq l'os no deixa passar color
 			finalColor.a = 1.0;
 
-		}
-		//finalColor += rayprops.rayStep * (1.0 - finalColor.a) * sample_color;
-
+		}//else{
+		//	finalColor += rayprops.rayStep * (1.0 - finalColor.a) * sample_color;
+		//}
+		
 		//Make a step on in the ray direction.
 		current_sample += rayprops.stepVector;
 
