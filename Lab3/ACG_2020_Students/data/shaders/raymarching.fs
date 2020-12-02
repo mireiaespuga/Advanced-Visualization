@@ -15,10 +15,8 @@ uniform float u_step;
 uniform float u_h;
 uniform sampler2D u_noise_texture;
 uniform sampler2D u_lut_texture;
-uniform vec3 Id;
-uniform vec3 Kd;
-uniform vec3 u_light_position;
-//uniform float u_z_coord;
+uniform vec4 plane;
+uniform vec4 plane2;
 
 struct rayProperties{
 	vec3 rayDirection;
@@ -64,6 +62,13 @@ vec4 rayLoop(){
 
 	for( int i=1; i<=max_steps; i+=1){
 	
+		float nose = plane.x*current_sample.x + plane.y*current_sample.y + plane.z*current_sample.z + plane.w;
+		float nose2 = plane2.x*current_sample.x + plane2.y*current_sample.y + plane2.z*current_sample.z + plane2.w;
+
+		if(nose>0 || nose2>0){
+			continue;
+		}
+
 		// volume sampling
 		float d = sample_volume(current_sample.x, current_sample.y, current_sample.z);
 
@@ -80,13 +85,13 @@ vec4 rayLoop(){
 
 			rayprops.gradientN = to01range(rayprops.gradientN);
 			float NdotL = dot(rayprops.gradientN, L);
-			NdotL = (NdotL + 1.0) / 2.0;
+			NdotL = to01range(vec3(NdotL)).x;
 
 			finalColor.rgb += sample_color.rgb * NdotL * (1.0 - finalColor.a); //1-alfa es transmissivitat si es os no passa color pq l'os no deixa passar color
 			finalColor.a = 1.0;
 
 		}else{
-			finalColor += rayprops.rayStep * (1.0 - finalColor.a) * sample_color;
+			//finalColor += rayprops.rayStep * (1.0 - finalColor.a) * sample_color;
 		}
        
 		//Make a step on in the ray direction.

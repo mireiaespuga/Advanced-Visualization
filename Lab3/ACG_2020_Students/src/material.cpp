@@ -88,9 +88,8 @@ void VolumeMaterial::setUniforms(Camera* camera, Matrix44 model)
 	shader->setUniform("u_noise_texture", noise_texture, 1);
 	shader->setUniform("u_lut_texture", lut_texture, 3);
 	shader->setUniform("u_thr", threshold);
-	shader->setUniform("Id", vec3(1.f, 1.f, 1.f));
-	shader->setUniform("Kd", vec3(1.f, 1.f, 1.f));
-	shader->setUniform("u_light_position", light_position);
+	shader->setUniform("plane", vec4(3.082, 10.959, 0.0, -10.959));
+	shader->setUniform("plane2", vec4(-4.110, 14.384, 0.0, -10.274));
 	
 	shader->setUniform("u_h", h);
 
