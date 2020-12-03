@@ -87,7 +87,7 @@ vec4 rayLoop(){
 		}
 
 		if (u_apply_transfer_function){
-			sample_color.xyz = texture2D(u_lut_texture, vec2(d, 1.0)).xyz;
+			sample_color.rgba = texture2D(u_lut_texture, vec2(d, 1.0)).xyzw;
 			sample_color.rgb *= sample_color.a;
 		}
 	
