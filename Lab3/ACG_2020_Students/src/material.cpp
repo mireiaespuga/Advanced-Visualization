@@ -66,6 +66,7 @@ VolumeMaterial::VolumeMaterial()
 	applyJittering = true;
 	applyTransferFunction = true;
 	applyVolumeClipping = true;
+	applyIsosurface = true;
 }
 
 VolumeMaterial::~VolumeMaterial()
@@ -80,6 +81,7 @@ void VolumeMaterial::renderInMenu() {
 	ImGui::Checkbox("Apply Jittering", &applyJittering);
 	ImGui::Checkbox("Apply Transfer Function", &applyTransferFunction);
 	ImGui::Checkbox("Apply Volume Clipping", &applyVolumeClipping);
+	ImGui::Checkbox("Apply Isosurface", &applyIsosurface);
 	if (ImGui::TreeNode("Volume clipping")) {
 		ImGui::SliderFloat4("Plane 1", (float*)&plane1, -20.0f, 20.0f); // Edit float representing plane1
 		ImGui::SliderFloat4("Plane 2", (float*)&plane2, -20.0f, 20.0f); // Edit float representing plane1
@@ -104,6 +106,7 @@ void VolumeMaterial::setUniforms(Camera* camera, Matrix44 model)
 	shader->setUniform("u_apply_jittering", applyJittering);
 	shader->setUniform("u_apply_transfer_function", applyTransferFunction);
 	shader->setUniform("u_apply_volume_clipping", applyVolumeClipping);
+	shader->setUniform("u_apply_isosurface", applyIsosurface);
 	if (texture)
 		shader->setUniform("u_texture", texture, 2);
 }
