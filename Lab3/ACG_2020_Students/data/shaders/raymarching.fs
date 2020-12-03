@@ -22,6 +22,7 @@ uniform vec4 u_plane2;
 uniform bool u_apply_volume_clipping;
 uniform bool u_apply_transfer_function;
 uniform bool u_apply_jittering;
+uniform bool u_apply_isosurface;
 
 struct rayProperties{
 	vec3 rayDirection;
@@ -90,9 +91,9 @@ vec4 rayLoop(){
 			sample_color.rgba = texture2D(u_lut_texture, vec2(d, 1.0)).xyzw;
 			sample_color.rgb *= sample_color.a;
 		}
-	
+
 		//Composition
-		if (d > u_thr){
+		if (u_apply_isosurface && d > u_thr){
 			vec3 L = normalize(u_camera_position - v_world_position);
 			L =  to01range(L);
 			setGradient(current_sample);
@@ -104,9 +105,9 @@ vec4 rayLoop(){
 			finalColor.rgb += (1.0 - finalColor.a) * sample_color.rgb * NdotL; //1-alfa es transmissivitat si es os no passa color pq l'os no deixa passar color
 			finalColor.a = 1.0;
 
-		}//else{
-		//	finalColor += rayprops.rayStep * (1.0 - finalColor.a) * sample_color;
-		//}
+		}else if(!u_apply_isosurface){
+			finalColor += rayprops.rayStep * (1.0 - finalColor.a) * sample_color;
+		}
 		
 		//Make a step on in the ray direction.
 		current_sample += rayprops.stepVector;
